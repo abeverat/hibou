@@ -12,6 +12,12 @@ import { app, safeStorage, systemPreferences } from 'electron';
 
 export type NomBiometrie = 'Touch ID' | 'Windows Hello';
 
+/**
+ * Désactivé pour l'instant : sans Team ID Apple, macOS redemande le mot de passe du Mac
+ * pour le trousseau à chaque nouvelle version. À réactiver avec un certificat Apple Developer.
+ */
+export const BIOMETRIE_ACTIVEE = false;
+
 // ---------- Windows Hello (via PowerShell et l'API WinRT UserConsentVerifier) ----------
 
 const SCRIPT_WINDOWS = `
@@ -46,7 +52,7 @@ let nomEnCache: NomBiometrie | null | undefined;
 
 export async function nomBiometrie(): Promise<NomBiometrie | null> {
   if (nomEnCache !== undefined) return nomEnCache;
-  if (!safeStorage.isEncryptionAvailable()) nomEnCache = null;
+  if (!BIOMETRIE_ACTIVEE || !safeStorage.isEncryptionAvailable()) nomEnCache = null;
   else if (process.platform === 'darwin') nomEnCache = systemPreferences.canPromptTouchID() ? 'Touch ID' : null;
   else if (process.platform === 'win32') nomEnCache = (await windowsHello('disponible')) === 'Available' ? 'Windows Hello' : null;
   else nomEnCache = null;

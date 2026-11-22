@@ -4,7 +4,7 @@ import { DemoBackend, ErreurEd, HibouService, METHODES_API, ReelBackend, type Ht
 import { CANAL_IPC, CANAL_REGLAGES, CANAL_VERROU, METHODES_BUREAU, type EtatBiometrie, type EtatReglages, type ReponseIpc } from '../preload/ipc';
 import { libellesSysteme } from './langue';
 import { appareil } from './appareil';
-import { coffre, nomBiometrie, verifierBiometrie, type Identifiants } from './biometrie';
+import { BIOMETRIE_ACTIVEE, coffre, nomBiometrie, verifierBiometrie, type Identifiants } from './biometrie';
 
 // En développement (npm run dev), Hibou se présente comme « Hibou Dev » : trousseau
 // (« Hibou Dev Safe Storage ») et dossier de données séparés de l'appli installée, sinon
@@ -245,6 +245,11 @@ function menuApplication() {
 }
 
 app.whenReady().then(() => {
+  if (!BIOMETRIE_ACTIVEE) {
+    // Aucun mot de passe enregistré ne doit rester sur le disque tant que la biométrie est coupée.
+    coffre.effacer(false);
+    coffre.effacer(true);
+  }
   menuApplication();
   verrouillageAutomatique();
   creerFenetre();

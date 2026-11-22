@@ -52,11 +52,11 @@ export function Reglages({ titre, onFermer, onChange }: { titre: string; onFerme
           <p className="discret">Chargement…</p>
         ) : (
           <>
+            {!nom && !etat.appareilMemorise && <p className="discret">Aucun réglage pour l'instant.</p>}
+            {nom && (
             <section>
               <h3>Déverrouillage biométrique</h3>
-              {!nom ? (
-                <p className="discret">Ni Touch ID ni Windows Hello n'est disponible sur cet ordinateur.</p>
-              ) : etat.biometrie.active ? (
+              {etat.biometrie.active ? (
                 <>
                   <p>
                     <span className="badge badge-ok">Activé</span> Hibou s'ouvre avec {nom}. Le mot de passe est chiffré
@@ -101,6 +101,7 @@ export function Reglages({ titre, onFermer, onChange }: { titre: string; onFerme
                 </p>
               )}
             </section>
+            )}
             {etat.appareilMemorise && (
               <section>
                 <h3>Cet ordinateur</h3>
