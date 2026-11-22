@@ -302,3 +302,4 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .badge-ok { background: #2f8a4e; color: white; margin: 0 0.3em 0 0; }
 .succes { color: #2f8a4e; margin: 0; }
 @media (prefers-color-scheme: dark) { .succes { color: #5cc07f; } }
+.bouton-icone { display: inline-flex; align-items: center; justify-content: center; padding-left: 0.6rem; padding-right: 0.6rem; }
