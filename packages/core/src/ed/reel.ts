@@ -1,7 +1,9 @@
 /**
  * Backend réel : parle à api.ecoledirecte.com.
- * Flux de connexion repris de la bibliothèque `ecoledirecte` 0.4.2 (intégration Home Assistant
- * hass-ecoledirecte), voir docs/ecoledirecte-api.md.
+ * Flux de connexion (GTK, QCM, cn/cv) repris de la bibliothèque `ecoledirecte` 0.4.2
+ * (intégration Home Assistant hass-ecoledirecte). Profil « appli mobile » et reconnexion par
+ * jeton d'après pawDirecte et Papillon-ED-Core (GPL-3.0 : protocole seulement, aucun code
+ * copié). Sources détaillées : docs/ecoledirecte-api.md, section « Références ».
  *
  * Sécurité : identifiant, mot de passe et token restent en mémoire dans cet objet ; rien n'est
  * écrit sur disque ni journalisé.
@@ -17,25 +19,21 @@ import { ErreurEd, erreurDepuisCode } from './erreurs';
 import type { RawLogin, RawQcm, RawReponse } from './raw';
 
 export const API_BASE = 'https://api.ecoledirecte.com/v3';
-/** Version attendue par l'API (code 517 si elle est refusée). Valeur de `ecoledirecte` 0.4.2. */
-export const API_VERSION = '4.104.3';
+/**
+ * Hibou se présente comme l'appli mobile EcoleDirecte : c'est ce profil qui permet
+ * « se souvenir de moi » (EcoleDirecte ne renvoie `accessToken` qu'à l'appli mobile ;
+ * vérifié le 22/11/2026 : le profil « site web » n'en renvoie pas).
+ * User-agent et version d'après pawDirecte (src/core/request.ts, commit c74455ff8616).
+ * Code 517 si la version est refusée : la mettre à jour ici.
+ */
+export const API_VERSION = '7.0.1';
 
 /** Le même user-agent doit être utilisé pendant toute la vie d'un token. */
-const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36';
+const USER_AGENT = 'Android EDMOBILE v7.0.1';
 
 const EN_TETES_BASE: Record<string, string> = {
   accept: 'application/json, text/plain, */*',
-  'accept-language': 'fr-FR,fr;q=0.9',
   'content-type': 'application/x-www-form-urlencoded',
-  origin: 'https://www.ecoledirecte.com',
-  referer: 'https://www.ecoledirecte.com/',
-  'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
-  'sec-ch-ua-mobile': '?0',
-  'sec-ch-ua-platform': '"Windows"',
-  'sec-fetch-dest': 'empty',
-  'sec-fetch-mode': 'cors',
-  'sec-fetch-site': 'same-site',
   'user-agent': USER_AGENT,
 };
 
@@ -199,7 +197,8 @@ export class ReelBackend implements EdBackend {
     const champs = parJeton
       ? [
           `"identifiant":"${encoderIdentifiant(identifiant)}"`,
-          '"motdepasse":""',
+          // « ??? » et non une chaîne vide : valeur envoyée par pawDirecte et Papillon-ED-Core.
+          '"motdepasse":"???"',
           '"isReLogin": true',
           `"uuid": ${JSON.stringify(this.uuid)}`,
           `"typeCompte": ${JSON.stringify(this.jeton!.typeCompte)}`,
@@ -214,7 +213,8 @@ export class ReelBackend implements EdBackend {
         ];
     if (this.fa) {
       const { cn, cv } = this.fa;
-      champs.push(`"cn":"${cn}"`, `"cv":"${cv}"`, `"fa": [{"cn": "${cn}", "cv": "${cv}"}]`);
+      // `uniq: false` : forme observée par pawDirecte (src/api/login.ts).
+      champs.push(`"cn":"${cn}"`, `"cv":"${cv}"`, `"fa": [{"cn": "${cn}", "cv": "${cv}", "uniq": false}]`);
     }
     const reponse = await this.appel('POST', `${API_BASE}/login.awp?v=${API_VERSION}`, `data={${champs.join(', ')}}`, { 'x-gtk': gtk });
     const json = this.lireJson<RawLogin>(reponse);
@@ -235,7 +235,10 @@ export class ReelBackend implements EdBackend {
     const compte = login.accounts[0]!;
     const accessToken = compte.accessToken || compte.access_token || this.jeton?.accessToken;
     if (!accessToken) {
+      // Diagnostic : noms des champs seulement, jamais leurs valeurs.
       this.journal('pas de jeton de reconnexion fourni');
+      this.journal(`champs de data : ${Object.keys(login).join(', ')}`);
+      this.journal(`champs du compte : ${Object.keys(compte).join(', ')}`);
       return;
     }
     this.jeton = { identifiant, uuid: this.uuid, typeCompte: String(compte.typeCompte), accessToken };

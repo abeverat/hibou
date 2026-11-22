@@ -12,7 +12,9 @@ API non officielle. Sources vérifiées le 2026-11-22 :
 ## Généralités
 
 - Base : `https://api.ecoledirecte.com/v3`
-- Paramètre de version : `v=4.104.3` (valeur de `ecoledirecte==0.4.2`).
+- Paramètre de version : `v=7.0.1`, avec le user-agent `Android EDMOBILE v7.0.1` (profil « appli mobile »,
+  d'après pawDirecte). Hibou utilisait auparavant le profil « site web » (`v=4.104.3`, user-agent Chrome,
+  en-têtes `origin`/`referer`, valeurs de `ecoledirecte==0.4.2`) : ce profil ne reçoit pas d'`accessToken`.
   Code `517` = version refusée → mettre à jour.
 - Toutes les requêtes en `POST`, verbe réel dans `?verbe=get|put|post`.
 - Corps : `data={...json...}`, `content-type: application/x-www-form-urlencoded`.
@@ -77,10 +79,26 @@ Source : documentation communautaire de l'API (`ecoledirecte-api-docs`), « Auth
    à garder avec le jeton. Soumise au QCM comme une connexion normale.
 2. La réponse contient `accessToken` dans l'objet compte (`data.accounts[0]`) — Hibou accepte aussi `access_token`.
 3. Reconnexion sans mot de passe : `POST login.awp` avec
-   `{"identifiant", "motdepasse": "", "isReLogin": true, "uuid", "typeCompte", "accesstoken"}` (+ `fa` si connus).
+   `{"identifiant", "motdepasse": "???", "isReLogin": true, "uuid", "typeCompte", "accesstoken"}` (+ `fa` si connus).
+   La doc communautaire indique `motdepasse` vide ; pawDirecte et Papillon-ED-Core envoient `"???"`, repris par Hibou.
+4. **Le jeton n'est renvoyé qu'au profil « appli mobile »** (user-agent `Android EDMOBILE …`). Constaté le
+   22/11/2026 : avec le profil « site web », le compte ne contient pas d'`accessToken` (seulement `socketToken`, `uid`…).
    La réponse est celle d'un login normal, avec un nouveau token de session (et éventuellement un nouvel `accessToken`).
 
 Hibou : jeton enregistré seulement si « Rester connecté » est coché (chiffré, `session.bin`), effacé à la
 déconnexion ou s'il est refusé. Dès le jeton reçu, le mot de passe est effacé de la mémoire.
 Durée de validité du jeton : inconnue.
+
+## Références
+
+Hibou n'inclut le code d'aucun de ces projets. Seuls des faits de protocole en sont repris (routes, noms de
+champs, en-têtes, valeurs attendues par EcoleDirecte), réimplémentés indépendamment. Merci à leurs auteurs.
+
+| Projet | Licence | Version consultée | Ce que Hibou en reprend |
+|---|---|---|---|
+| [hass-ecoledirecte](https://github.com/hacf-fr/hass-ecoledirecte) (HACF) | MIT | branche `main`, novembre 2026 | intégration de référence : flux de connexion qui fonctionne en pratique |
+| bibliothèque [`ecoledirecte`](https://pypi.org/project/ecoledirecte/) (Giga77), utilisée par hass-ecoledirecte | LGPL-3.0-or-later | 0.4.2 (`src/ecoledirecte_api/client.py`) | GTK, login, QCM (`doubleauth.awp`), cn/cv, encodage des identifiants, codes d'erreur, ancien profil « site web » |
+| [EduWireApps/ecoledirecte-api-docs](https://github.com/EduWireApps/ecoledirecte-api-docs) | aucune indiquée | commit `39e3a156e35d` (2025-04-01) | description de la connexion « type mobile » (`sesouvenirdemoi`, `uuid`, `isReLogin`, `accesstoken`), routes |
+| [Lecloow/pawDirecte](https://github.com/Lecloow/pawDirecte) | GPL-3.0 | commit `c74455ff8616` (2025-10-29), `src/core/request.ts`, `src/api/login.ts`, `src/definitions/login.ts` | user-agent `Android EDMOBILE v7.0.1`, `v=7.0.1`, `motdepasse: "???"` en reconnexion, `fa[].uniq: false`, champ `accessToken` du compte |
+| [PapillonApp/Papillon-ED-Core](https://github.com/PapillonApp/Papillon-ED-Core) | GPL-3.0 | commit `17e18a7048c0` (2024-04-25), `src/auth.ts` | confirmation du flux `sesouvenirdemoi` / `renewToken` (`isReLogin`, `accesstoken`, `motdepasse: "???"`) |
 

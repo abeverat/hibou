@@ -134,6 +134,15 @@ et les publie ; les liens de téléchargement ci-dessus pointent toujours vers l
   `cn`/`cv` fournis par EcoleDirecte sont gardés, chiffrés par le trousseau du système
   (`appareil.bin` dans le dossier de données de l'appli). « Oublier cet ordinateur » les efface.
 
+## Références et remerciements
+
+Hibou s'appuie sur le travail de la communauté qui documente l'API EcoleDirecte : l'intégration Home Assistant
+[hass-ecoledirecte](https://github.com/hacf-fr/hass-ecoledirecte), la documentation
+[ecoledirecte-api-docs](https://github.com/EduWireApps/ecoledirecte-api-docs), et les bibliothèques
+[pawDirecte](https://github.com/Lecloow/pawDirecte) et [Papillon-ED-Core](https://github.com/PapillonApp/Papillon-ED-Core)
+(projet [Papillon](https://github.com/PapillonApp)). Aucun code n'en est copié : seuls des faits de protocole sont
+repris. Détail (versions consultées, ce qui est repris) : [docs/ecoledirecte-api.md](docs/ecoledirecte-api.md#références).
+
 ## Licence
 
 [MIT](LICENSE). Hibou n'est ni affilié à EcoleDirecte ni approuvé par Aplim.

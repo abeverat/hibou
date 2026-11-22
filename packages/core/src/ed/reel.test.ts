@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { encoderIdentifiant, ReelBackend, type RequeteHttp, type ReponseHttp } from './reel';
+import { API_VERSION, encoderIdentifiant, ReelBackend, type RequeteHttp, type ReponseHttp } from './reel';
 import { encodeBase64 } from './parsers';
 import { HibouService } from '../service';
 
@@ -44,12 +44,12 @@ function fauxServeur(options: { qcm?: boolean; expireApres?: number; jeton?: boo
       // Reconnexion « se souvenir de moi » : jeton AT<n> valide s'il a été émis, mot de passe vide.
       if (r.corps!.includes('"isReLogin": true')) {
         const at = /"accesstoken": "([^"]+)"/.exec(r.corps!)?.[1];
-        const ok = r.corps!.includes('"motdepasse":""') && r.corps!.includes('"uuid": "U-1"') && at && jetonsValides.has(at);
+        const ok = r.corps!.includes('"motdepasse":"???"') && r.corps!.includes('"uuid": "U-1"') && at && jetonsValides.has(at);
         if (!ok) return rep({ code: 505, message: 'jeton' });
         return rep({ code: 200, data: avecJeton() }, { 'x-token': token });
       }
       if (!r.corps!.includes('"motdepasse":"m%C3%B4t%26de"')) return rep({ code: 505, message: 'mdp' });
-      if (options.qcm && !(qcmResolu && r.corps!.includes('"fa": [{"cn": "CN", "cv": "CV"}]'))) {
+      if (options.qcm && !(qcmResolu && r.corps!.includes('"fa": [{"cn": "CN", "cv": "CV", "uniq": false}]'))) {
         return rep({ code: 250, token: '', data: { accounts: [] } }, { 'x-token': token, '2fa-token': 'F2A' });
       }
       return rep({ code: 200, data: options.jeton ? avecJeton() : COMPTE }, { 'x-token': token });
@@ -81,14 +81,15 @@ describe('ReelBackend', () => {
     const service = new HibouService(new ReelBackend({ http }));
     const r = await service.connexion('moi', 'môt&de');
     expect(r.etat).toBe('connecte');
-    expect(appels[0]!.url).toBe('https://api.ecoledirecte.com/v3/login.awp?gtk=1&v=4.104.3');
+    expect(appels[0]!.url).toBe(`https://api.ecoledirecte.com/v3/login.awp?gtk=1&v=${API_VERSION}`);
     expect(appels[1]!.enTetes['x-gtk']).toBe('gtk1');
 
     await service.emploiDuTemps('2026-11-23', '2026-11-28');
     const edt = appels[2]!;
-    expect(edt.url).toBe('https://api.ecoledirecte.com/v3/E/501/emploidutemps.awp?verbe=get&v=4.104.3');
+    expect(edt.url).toBe(`https://api.ecoledirecte.com/v3/E/501/emploidutemps.awp?verbe=get&v=${API_VERSION}`);
     expect(edt.enTetes['x-token']).toBe('T2');
     expect(edt.enTetes['x-gtk']).toBeUndefined();
+    expect(edt.enTetes['user-agent']).toBe('Android EDMOBILE v7.0.1');
     expect(edt.corps).toBe('data={"dateDebut":"2026-11-23","dateFin":"2026-11-28","avecTrous":false}');
 
     await service.devoirs();
@@ -108,7 +109,7 @@ describe('ReelBackend', () => {
     const r = await service.repondreQcm(avril.valeur);
     expect(r.etat).toBe('connecte');
     expect(memorise).toEqual({ cn: 'CN', cv: 'CV' });
-    expect(appels.at(-1)!.corps).toContain('"fa": [{"cn": "CN", "cv": "CV"}]');
+    expect(appels.at(-1)!.corps).toContain('"fa": [{"cn": "CN", "cv": "CV", "uniq": false}]');
   });
 
   it('cn/cv mémorisés : pas de QCM', async () => {
@@ -159,7 +160,7 @@ describe('ReelBackend', () => {
       await expect(service.emploiDuTemps('2026-11-23', '2026-11-28')).resolves.toEqual([]);
       const relogin = corpsLogin(appels)[1]!;
       expect(relogin).toContain('"isReLogin": true');
-      expect(relogin).toContain('"motdepasse":""');
+      expect(relogin).toContain('"motdepasse":"???"');
       expect(relogin).not.toContain('m%C3%B4t');
       expect(recus).toEqual(['AT1', 'AT2']);
     });
