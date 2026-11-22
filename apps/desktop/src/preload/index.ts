@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld(
   'hibou',
   {
     ...Object.fromEntries([...METHODES_API, ...METHODES_BUREAU].map((m) => [m, appeler(m)])),
+    /** « darwin », « win32 »… : l'interface adapte son style (fenêtre translucide sur macOS). */
+    plateforme: process.platform,
     onVerrouillage(rappel: () => void) {
       const ecoute = () => rappel();
       ipcRenderer.on(CANAL_VERROU, ecoute);

@@ -232,7 +232,17 @@ function creerFenetre() {
     minWidth: 360,
     minHeight: 500,
     title: DEMO ? 'Hibou — démo' : 'Hibou',
-    backgroundColor: '#111418',
+    // macOS : matériau translucide natif derrière la fenêtre (look « verre »), barre de titre
+    // fondue dans l'en-tête de Hibou. Ailleurs : fond opaque.
+    ...(process.platform === 'darwin'
+      ? {
+          vibrancy: 'under-window' as const,
+          visualEffectState: 'followWindow' as const,
+          backgroundColor: '#00000000',
+          titleBarStyle: 'hiddenInset' as const,
+          trafficLightPosition: { x: 18, y: 20 },
+        }
+      : { backgroundColor: '#111418' }),
     show: false,
     autoHideMenuBar: true,
     webPreferences: {

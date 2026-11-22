@@ -325,3 +325,105 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .carte-connexion label.case input { margin-top: 0.2rem; width: auto; }
 .carte-connexion label.case > span { display: flex; flex-direction: column; gap: 0.2rem; }
 .reprise { margin: 1.2rem 0 0.4rem; text-align: center; }
+
+/* ==========================================================================
+   Look « verre » (liquid glass)
+   Surfaces translucides + flou + liseré lumineux. Sur macOS, la fenêtre laisse voir le matériau
+   natif (vibrancy) ; ailleurs, un fond dégradé discret joue ce rôle.
+   ========================================================================== */
+:root {
+  --rayon: 16px;
+  --verre: rgb(255 255 255 / 0.62);
+  --verre-fort: rgb(255 255 255 / 0.85);
+  --verre-liseré: rgb(255 255 255 / 0.75);
+  --verre-trait: rgb(0 0 0 / 0.07);
+  --verre-ombre: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 28px rgb(0 0 0 / 0.07);
+  --verre-flou: blur(22px) saturate(180%);
+  --fond-appli:
+    radial-gradient(1200px 700px at 10% -10%, rgb(91 151 234 / 0.18), transparent 60%),
+    radial-gradient(900px 600px at 110% 10%, rgb(184 129 46 / 0.12), transparent 60%),
+    radial-gradient(900px 700px at 50% 120%, rgb(58 168 152 / 0.12), transparent 60%),
+    var(--fond);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --verre: rgb(38 42 50 / 0.55);
+    --verre-fort: rgb(60 66 78 / 0.7);
+    --verre-liseré: rgb(255 255 255 / 0.09);
+    --verre-trait: rgb(255 255 255 / 0.06);
+    --verre-ombre: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 32px rgb(0 0 0 / 0.35);
+  }
+}
+body { background: var(--fond-appli); background-attachment: fixed; min-height: 100vh; }
+/* macOS : la fenêtre est transparente, le matériau natif fait le fond. */
+html[data-plateforme='darwin'] body { background: transparent; }
+html[data-plateforme='darwin'] { --fond: transparent; }
+
+/* Surfaces */
+.carte, .panneau-reglages {
+  background: var(--verre);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  border: 1px solid var(--verre-trait);
+  box-shadow: inset 0 1px 0 var(--verre-liseré), var(--verre-ombre);
+  border-radius: var(--rayon);
+}
+
+/* Commandes */
+button { border-radius: 999px; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.25); }
+button:not(:disabled):active { transform: scale(0.98); }
+.bouton-secondaire {
+  background: var(--verre); border: 1px solid var(--verre-trait);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  box-shadow: inset 0 1px 0 var(--verre-liseré);
+}
+.bouton-secondaire:not(:disabled):hover { background: var(--verre-fort); }
+button.lien { box-shadow: none; border-radius: 0; }
+input, select { background: var(--verre); border: 1px solid var(--verre-trait); border-radius: 12px; }
+input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* En-tête : barre de verre flottante, sert aussi de barre de titre (glisser la fenêtre). */
+.entete {
+  background: var(--verre); border-bottom: 1px solid var(--verre-trait);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  -webkit-app-region: drag; z-index: 5;
+}
+.entete button, .entete select, .entete a, .entete input { -webkit-app-region: no-drag; }
+html[data-plateforme='darwin'] .entete { padding-left: 88px; } /* place des boutons de fenêtre */
+html[data-plateforme='darwin'] .page-connexion::before {
+  content: ''; position: fixed; inset: 0 0 auto 0; height: 36px; -webkit-app-region: drag;
+}
+
+/* Onglets : capsule segmentée, centrée */
+.onglets { display: flex; justify-content: center; background: none; border-bottom: none; padding: 0.8rem 1.2rem 0.2rem; overflow: visible; }
+.onglets-capsule { max-width: 100%; overflow-x: auto; }
+.onglets button {
+  border-bottom: none; border-radius: 999px; padding: 0.45em 1.1em; box-shadow: none; color: var(--discret);
+}
+.onglets button:hover { color: var(--texte); }
+.onglets button.actif {
+  background: var(--verre-fort); color: var(--texte);
+  box-shadow: inset 0 1px 0 var(--verre-liseré), 0 1px 4px rgb(0 0 0 / 0.12);
+}
+.onglets-capsule {
+  display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px;
+  background: var(--verre); border: 1px solid var(--verre-trait);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  box-shadow: inset 0 1px 0 var(--verre-liseré), var(--verre-ombre);
+}
+.onglets-periodes button { border-radius: 999px; background: var(--verre); border-color: var(--verre-trait); }
+
+/* Calendriers */
+.cal-colonne {
+  background: var(--verre); border: 1px solid var(--verre-trait); border-radius: 14px;
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  box-shadow: inset 0 1px 0 var(--verre-liseré);
+}
+.cal-jour-titre { border-radius: 999px; padding: 0.3rem 0.7rem; }
+.cal-cours { border-radius: 10px; }
+.cal-cours.plein {
+  background: color-mix(in oklab, var(--matiere-fond) 82%, transparent);
+  box-shadow: inset 0 1px 0 var(--verre-liseré);
+}
+.cal-cours.vide { background: transparent; border-left-color: var(--verre-trait); }
+.frise li { border-radius: 10px; }
+.badge { border-radius: 999px; }

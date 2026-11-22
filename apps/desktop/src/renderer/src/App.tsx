@@ -132,11 +132,13 @@ export function App() {
         </div>
       </header>
       <nav className="onglets" aria-label="Sections">
+        <div className="onglets-capsule">
         {ONGLETS.map((o) => (
           <button key={o.id} className={onglet === o.id ? 'actif' : ''} aria-current={onglet === o.id ? 'page' : undefined} onClick={() => setOnglet(o.id)}>
             {o.nom}
           </button>
         ))}
+        </div>
       </nav>
       <main className="contenu">
         {onglet === 'aujourdhui' && <Aujourdhui key={cle} onVoir={setOnglet} />}

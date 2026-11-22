@@ -32,6 +32,7 @@ export interface EtatBiometrie {
 }
 
 export interface ApiBureau extends HibouApi {
+  readonly plateforme: string;
   /** `garder` : « Rester connecté sur cet ordinateur » (jeton EcoleDirecte enregistré chiffré). */
   connexion(identifiant: string, motdepasse: string, garder?: boolean): Promise<import('@hibou/core').ResultatConnexion>;
   /** Reconnexion avec le jeton enregistré ; null s'il n'y en a pas. */
