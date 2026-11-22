@@ -427,3 +427,8 @@ html[data-plateforme='darwin'] .page-connexion::before {
 .cal-cours.vide { background: transparent; border-left-color: var(--verre-trait); }
 .frise li { border-radius: 10px; }
 .badge { border-radius: 999px; }
+
+/* Survol d'un cours avec devoirs : la consigne se déplie (jusqu'à 12 lignes), sur fond opaque. */
+.cal-cours:hover .cal-consigne,
+.cal-grille.compact .cal-cours:hover .cal-consigne { -webkit-line-clamp: 12; opacity: 1; }
+.cal-cours.plein:hover { background: var(--matiere-fond-fort); }
