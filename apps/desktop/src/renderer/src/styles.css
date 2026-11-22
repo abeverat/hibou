@@ -269,3 +269,6 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
   .table-matieres .ligne-matiere > td:nth-child(3) { grid-column: 1 / -1; }
   .table-matieres .ligne-matiere { border-bottom: 1px solid var(--bord); }
 }
+.memo-appareil { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; }
+.memo-appareil h2 { margin: 0; font-size: 1.1rem; }
+.memo-appareil p { margin: 0; color: var(--discret); }

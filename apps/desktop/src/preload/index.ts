@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { METHODES_API } from '@hibou/core/src/service';
-import { CANAL_IPC, type ReponseIpc } from './ipc';
+import { CANAL_IPC, METHODES_BUREAU, type ReponseIpc } from './ipc';
 
 /** Erreur reçue du processus principal, reconstruite côté fenêtre. */
 const appeler = (methode: string) => async (...args: unknown[]) => {
@@ -12,5 +12,5 @@ const appeler = (methode: string) => async (...args: unknown[]) => {
 
 contextBridge.exposeInMainWorld(
   'hibou',
-  Object.fromEntries(METHODES_API.map((m) => [m, appeler(m)])),
+  Object.fromEntries([...METHODES_API, ...METHODES_BUREAU].map((m) => [m, appeler(m)])),
 );

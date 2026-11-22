@@ -1,37 +1,80 @@
 import { join } from 'node:path';
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
-import { DemoBackend, ErreurEd, HibouService, METHODES_API, type EdBackend } from '@hibou/core';
-import { CANAL_IPC, type ReponseIpc } from '../preload/ipc';
+import { DemoBackend, ErreurEd, HibouService, METHODES_API, ReelBackend, type Http } from '@hibou/core';
+import { CANAL_IPC, METHODES_BUREAU, type ReponseIpc } from '../preload/ipc';
+import { appareil } from './appareil';
 
 const DEMO = process.env.DEMO === '1';
+/** HIBOU_DEBUG=1 : journalise les routes et codes EcoleDirecte (jamais d'identifiants ni de données). */
+const DEBUG = process.env.HIBOU_DEBUG === '1';
 
-/** Le backend réel (étape 4) remplacera celui-ci. */
-const backendReelProvisoire: EdBackend = {
-  demo: false,
-  async connexion() {
-    throw new ErreurEd('non-implemente', "La connexion à EcoleDirecte n'est pas encore branchée. Lancez « npm run dev:demo ».");
-  },
-  async repondreQcm() {
-    throw new ErreurEd('non-implemente', 'Non disponible.');
-  },
-  async requete() {
-    throw new ErreurEd('non-connecte', "Vous n'êtes pas connecté.");
-  },
-  deconnexion() {},
+/** HTTP via le fetch de Node : pas de CORS, en-têtes de navigateur autorisés. */
+const httpNode: Http = async (r) => {
+  const reponse = await fetch(r.url, {
+    method: r.methode,
+    headers: r.enTetes,
+    body: r.corps,
+    signal: AbortSignal.timeout(30_000),
+  });
+  const enTetes: Record<string, string> = {};
+  reponse.headers.forEach((v, k) => (enTetes[k] = v));
+  return { statut: reponse.status, enTetes, cookies: reponse.headers.getSetCookie(), texte: await reponse.text() };
 };
 
+/** cn/cv reçus après un QCM réussi, en attente de l'accord de l'utilisateur pour les mémoriser. */
+let faEnAttente: { identifiant: string; fa: { cn: string; cv: string } } | null = null;
+let identifiantCourant = '';
+
+const reel = DEMO
+  ? null
+  : new ReelBackend({
+      http: httpNode,
+      journal: DEBUG ? (m) => console.log(`[ecoledirecte] ${m}`) : undefined,
+      onDoubleAuth: (fa) => (faEnAttente = { identifiant: identifiantCourant, fa }),
+    });
+
 // Le service (et donc le token EcoleDirecte) vit uniquement dans le processus principal :
-// la fenêtre n'y accède que par les méthodes listées dans METHODES_API.
-const service = new HibouService(DEMO ? new DemoBackend() : backendReelProvisoire);
-const methodes = new Set<string>(METHODES_API);
+// la fenêtre n'y accède que par les méthodes listées ci-dessous.
+const service = new HibouService(reel ?? new DemoBackend());
+
+const bureau = {
+  async connexion(identifiant: string, motdepasse: string) {
+    identifiantCourant = identifiant;
+    faEnAttente = null;
+    reel?.definirDoubleAuth(appareil.lire(identifiant));
+    return service.connexion(identifiant, motdepasse);
+  },
+  async appareilEnAttente() {
+    return faEnAttente !== null && appareil.chiffrementDisponible();
+  },
+  async memoriserAppareil() {
+    if (!faEnAttente || !appareil.chiffrementDisponible()) return false;
+    appareil.memoriser(faEnAttente.identifiant, faEnAttente.fa);
+    faEnAttente = null;
+    return true;
+  },
+  async oublierAppareil() {
+    appareil.oublier();
+    reel?.definirDoubleAuth(null);
+  },
+  async appareilMemorise() {
+    return !DEMO && appareil.estMemorise();
+  },
+  async deconnexion() {
+    faEnAttente = null;
+    return service.deconnexion();
+  },
+};
+
+const methodes = new Set<string>([...METHODES_API, ...METHODES_BUREAU]);
 
 ipcMain.handle(CANAL_IPC, async (_evt, methode: string, args: unknown[]): Promise<ReponseIpc> => {
   if (!methodes.has(methode) || !Array.isArray(args)) {
     return { ok: false, erreur: { type: 'inconnue', message: `Méthode inconnue : ${methode}` } };
   }
   try {
-    const fn = service[methode as keyof HibouService] as (...a: unknown[]) => Promise<unknown>;
-    return { ok: true, valeur: await fn.apply(service, args) };
+    const cible = (methode in bureau ? bureau : service) as unknown as Record<string, (...a: unknown[]) => Promise<unknown>>;
+    return { ok: true, valeur: await cible[methode]!.apply(cible, args) };
   } catch (e) {
     if (e instanceof ErreurEd) return { ok: false, erreur: { type: e.type, message: e.message } };
     // Pas de détails techniques dans la fenêtre (ni dans les logs : ils pourraient contenir des données).

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import type { ResultatConnexion } from '@hibou/core';
 import { api, lireErreur } from '../api';
 
@@ -11,6 +11,13 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
   const [choix, setChoix] = useState('');
   const [erreur, setErreur] = useState('');
   const [enCours, setEnCours] = useState(false);
+  /** Après un QCM réussi : proposer de mémoriser l'appareil. */
+  const [proposerMemo, setProposerMemo] = useState(false);
+  const [memorise, setMemorise] = useState(false);
+
+  useEffect(() => {
+    void api.appareilMemorise().then(setMemorise);
+  }, []);
 
   async function traiter(promesse: Promise<ResultatConnexion>, apresEchecQcm = false) {
     setEnCours(true);
@@ -19,7 +26,8 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
       const r = await promesse;
       if (r.etat === 'connecte') {
         setMotdepasse('');
-        onConnecte();
+        if (qcm && (await api.appareilEnAttente())) setProposerMemo(true);
+        else onConnecte();
       } else {
         if (apresEchecQcm) setErreur('Réponse incorrecte. Une nouvelle question vous est posée.');
         setQcm(r);
@@ -50,7 +58,27 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
         </h1>
         <p className="discret">Client non officiel pour EcoleDirecte</p>
 
-        {!qcm ? (
+        {proposerMemo ? (
+          <div className="memo-appareil">
+            <h2>Mémoriser cet ordinateur ?</h2>
+            <p>
+              EcoleDirecte ne posera plus la question de sécurité sur cet ordinateur. Hibou garde seulement le code
+              de confirmation fourni par EcoleDirecte, chiffré par le trousseau du système. Votre mot de passe n'est
+              jamais enregistré.
+            </p>
+            <button
+              onClick={async () => {
+                await api.memoriserAppareil();
+                onConnecte();
+              }}
+            >
+              Oui, mémoriser
+            </button>
+            <button className="bouton-secondaire" onClick={onConnecte}>
+              Non, merci
+            </button>
+          </div>
+        ) : !qcm ? (
           <form onSubmit={envoyer}>
             <label>
               Identifiant
@@ -76,6 +104,21 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
             <button type="submit" disabled={enCours}>
               {enCours ? 'Connexion…' : 'Se connecter'}
             </button>
+            {memorise && (
+              <p className="aide-demo">
+                Cet ordinateur est mémorisé pour éviter la question de sécurité.{' '}
+                <button
+                  type="button"
+                  className="lien"
+                  onClick={async () => {
+                    await api.oublierAppareil();
+                    setMemorise(false);
+                  }}
+                >
+                  Oublier cet ordinateur
+                </button>
+              </p>
+            )}
             {demo && (
               <p className="aide-demo">
                 Mode démo : n'importe quel mot de passe fonctionne.

@@ -8,3 +8,4 @@ export { DemoBackend } from './ed/demo';
 export * from './calendrier';
 export * from './calc/moyennes';
 export * from './ics';
+export { ReelBackend, API_VERSION, type Http, type RequeteHttp, type ReponseHttp } from './ed/reel';

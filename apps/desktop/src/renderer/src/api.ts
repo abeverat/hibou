@@ -1,12 +1,13 @@
-import type { HibouApi, TypeErreur } from '@hibou/core';
+import type { TypeErreur } from '@hibou/core';
+import type { ApiBureau } from '../../preload/ipc';
 
 declare global {
   interface Window {
-    hibou: HibouApi;
+    hibou: ApiBureau;
   }
 }
 
-export const api: HibouApi = window.hibou;
+export const api: ApiBureau = window.hibou;
 
 export interface ErreurAffichable {
   type: TypeErreur;
