@@ -12,13 +12,16 @@ Pas besoin de connaissances techniques. Il suffit de télécharger un fichier et
 
 ### Sur Mac
 
-1. **Télécharger** [Hibou-0.1.0-mac.dmg](https://github.com/abeverat/hibou/releases/download/v0.1.0/Hibou-0.1.0-mac.dmg)
-   (environ 210 Mo, fonctionne sur tous les Mac récents, Intel ou Apple Silicon).
-2. **Ouvrir le fichier téléchargé** : il se trouve dans le dossier **Téléchargements**. Double-cliquez dessus.
+1. **Savoir quel Mac vous avez** : menu  (en haut à gauche) → **À propos de ce Mac**.
+   La ligne **Puce** ou **Processeur** indique « Apple M1, M2, M3… » ou « Intel ».
+2. **Télécharger** le fichier correspondant (environ 110 Mo) :
+   - Mac à puce Apple (M1, M2, M3…) : [Hibou-mac-arm64.dmg](https://github.com/abeverat/hibou/releases/latest/download/Hibou-mac-arm64.dmg)
+   - Mac Intel : [Hibou-mac-x64.dmg](https://github.com/abeverat/hibou/releases/latest/download/Hibou-mac-x64.dmg)
+3. **Ouvrir le fichier téléchargé** : il se trouve dans le dossier **Téléchargements**. Double-cliquez dessus.
    Une fenêtre s'ouvre avec l'icône du hibou et un dossier **Applications**.
-3. **Glisser le hibou sur le dossier Applications.** Hibou est installé. Vous pouvez fermer la fenêtre,
+4. **Glisser le hibou sur le dossier Applications.** Hibou est installé. Vous pouvez fermer la fenêtre,
    puis mettre le fichier `.dmg` à la corbeille.
-4. **Première ouverture** : ouvrez le dossier **Applications** (dans le Finder) et double-cliquez sur **Hibou**.
+5. **Première ouverture** : ouvrez le dossier **Applications** (dans le Finder) et double-cliquez sur **Hibou**.
    macOS affiche un message du type *« Apple n'a pas pu vérifier… »* : c'est normal, Hibou n'est pas encore
    enregistré auprès d'Apple. Cliquez sur **Terminé** (ou **OK**), puis :
    - ouvrez le menu  → **Réglages Système** → **Confidentialité et sécurité** ;
@@ -26,12 +29,12 @@ Pas besoin de connaissances techniques. Il suffit de télécharger un fichier et
    - confirmez avec votre mot de passe du Mac ou Touch ID, puis cliquez **Ouvrir**.
 
    Ces étapes ne sont à faire **qu'une seule fois**. Ensuite, Hibou s'ouvre normalement, depuis le Launchpad ou le Dock.
-5. Si macOS demande l'accès au **trousseau** (« Hibou Safe Storage »), cliquez **Toujours autoriser** :
+6. Si macOS demande l'accès au **trousseau** (« Hibou Safe Storage »), cliquez **Toujours autoriser** :
    c'est ce qui permet de garder vos réglages chiffrés.
 
 ### Sur Windows
 
-1. **Télécharger** [Hibou-0.1.0-windows-setup.exe](https://github.com/abeverat/hibou/releases/download/v0.1.0/Hibou-0.1.0-windows-setup.exe)
+1. **Télécharger** [Hibou-windows-setup.exe](https://github.com/abeverat/hibou/releases/latest/download/Hibou-windows-setup.exe)
    (environ 115 Mo, Windows 10 ou 11, 64 bits).
 2. **Ouvrir le fichier téléchargé** (dossier **Téléchargements**).
 3. Si un écran bleu *« Windows a protégé votre ordinateur »* apparaît : cliquez sur **Informations complémentaires**,
@@ -96,8 +99,8 @@ npm run dist        # installeur pour la plateforme courante, dans apps/desktop/
 ```
 
 Pour publier une version : mettre à jour `version` dans `apps/desktop/package.json`, puis
-`git tag v0.1.0 && git push origin v0.1.0`. GitHub Actions fabrique le .dmg (macOS) et le .exe (Windows)
-et les publie dans une préversion.
+`git tag vX.Y.Z && git push origin vX.Y.Z`. GitHub Actions fabrique les .dmg (macOS arm64 et x64) et le .exe (Windows)
+et les publie ; les liens de téléchargement ci-dessus pointent toujours vers la dernière version.
 
 ### Organisation
 
@@ -126,3 +129,6 @@ et les publie dans une préversion.
 ## Licence
 
 [MIT](LICENSE). Hibou n'est ni affilié à EcoleDirecte ni approuvé par Aplim.
+
+L'icône utilise le hibou de [Noto Emoji](https://github.com/googlefonts/noto-emoji) (Google), sous licence
+[Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) ; voir [NOTICE](NOTICE).

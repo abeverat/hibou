@@ -40,10 +40,10 @@ jobs:
         with:
           path: installeurs
           merge-multiple: true
-      - name: Créer la release (préversion)
+      - name: Créer la release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" installeurs/* \
-            --repo "$GITHUB_REPOSITORY" --prerelease --title "Hibou $GITHUB_REF_NAME" \
-            --notes "Version expérimentale, non signée. Voir « Installer » dans le README pour passer l'avertissement à la première ouverture."
+            --repo "$GITHUB_REPOSITORY" --latest --title "Hibou $GITHUB_REF_NAME" \
+            --notes "Version expérimentale, non signée. Mac : prendre « arm64 » pour un Mac à puce Apple (M1, M2…), « x64 » pour un Mac Intel. Voir « Installer » dans le README pour passer l'avertissement à la première ouverture."

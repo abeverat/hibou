@@ -9,18 +9,24 @@ directories:
 files:
   - out/**
   - package.json
-artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+# Noms sans version : les liens « releases/latest/download/… » du README restent valables.
+artifactName: ${productName}-${os}-${arch}.${ext}
+# Taille : on ne garde que les traductions de Chromium utiles (menus contextuels, dialogues)
+# et la compression maximale. Les langues suivent celles du menu natif (main/langue.ts).
+electronLanguages: [fr, en, en-GB, de, es, it, pt, pt-BR, nl, el]
+compression: maximum
 
 mac:
   target:
+    # Deux fichiers séparés plutôt qu'un « universel » qui embarque les deux (taille ×2).
     - target: dmg
-      arch: universal # un seul fichier pour Mac Intel et Apple Silicon
+      arch: [arm64, x64]
   category: public.app-category.education
   identity: '-' # signature ad hoc (indispensable sur Apple Silicon), sans compte Apple Developer
   hardenedRuntime: false
   notarize: false
 dmg:
-  artifactName: ${productName}-${version}-mac.${ext}
+  artifactName: ${productName}-mac-${arch}.${ext}
 
 win:
   target:
@@ -30,10 +36,10 @@ nsis:
   oneClick: false
   perMachine: false # installation pour l'utilisateur, sans droits administrateur
   allowToChangeInstallationDirectory: true
-  artifactName: ${productName}-${version}-windows-setup.${ext}
+  artifactName: ${productName}-windows-setup.${ext}
 
 publish:
   provider: github
   owner: abeverat
   repo: hibou
-  releaseType: prerelease
+  releaseType: release

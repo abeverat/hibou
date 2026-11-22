@@ -1,0 +1,9 @@
+Hibou
+Copyright (c) 2026 abeverat — licence MIT (voir LICENSE).
+
+L'icône de l'application (apps/desktop/build/icon.png) est composée à partir de
+l'image « owl » (U+1F989) de Noto Emoji, version 3D :
+  https://github.com/googlefonts/noto-emoji/blob/main/3D/png/512/emoji_u1f989.png
+Copyright Google LLC, sous licence Apache License, Version 2.0 :
+  https://www.apache.org/licenses/LICENSE-2.0
+Modification : placée sur un fond arrondi dégradé bleu.
