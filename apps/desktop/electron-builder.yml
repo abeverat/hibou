@@ -1,0 +1,39 @@
+# Fabrication des installeurs : npm run dist (à la racine).
+# Pas encore de certificat : macOS en signature « ad hoc », Windows non signé.
+appId: io.github.abeverat.hibou
+productName: Hibou
+copyright: Copyright © 2026 abeverat — MIT
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+  - package.json
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
+mac:
+  target:
+    - target: dmg
+      arch: universal # un seul fichier pour Mac Intel et Apple Silicon
+  category: public.app-category.education
+  identity: '-' # signature ad hoc (indispensable sur Apple Silicon), sans compte Apple Developer
+  hardenedRuntime: false
+  notarize: false
+dmg:
+  artifactName: ${productName}-${version}-mac.${ext}
+
+win:
+  target:
+    - target: nsis
+      arch: x64
+nsis:
+  oneClick: false
+  perMachine: false # installation pour l'utilisateur, sans droits administrateur
+  allowToChangeInstallationDirectory: true
+  artifactName: ${productName}-${version}-windows-setup.${ext}
+
+publish:
+  provider: github
+  owner: abeverat
+  repo: hibou
+  releaseType: prerelease

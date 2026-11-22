@@ -1,0 +1,49 @@
+# Publie les installeurs Mac et Windows quand on pousse un tag de version :
+#   git tag v0.1.0 && git push origin v0.1.0
+# Le tag doit correspondre à "version" dans apps/desktop/package.json.
+name: Installeurs
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  installeurs:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false' # pas de certificat pour l'instant
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installeur-${{ matrix.os }}
+          path: |
+            apps/desktop/release/*.dmg
+            apps/desktop/release/*.exe
+          if-no-files-found: error
+
+  publication:
+    needs: installeurs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: installeurs
+          merge-multiple: true
+      - name: Créer la release (préversion)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" installeurs/* \
+            --repo "$GITHUB_REPOSITORY" --prerelease --title "Hibou $GITHUB_REF_NAME" \
+            --notes "Version expérimentale, non signée. Voir « Installer » dans le README pour passer l'avertissement à la première ouverture."

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a8ae6"/><stop offset="1" stop-color="#2b5fb0"/>
+    </linearGradient>
+    <linearGradient id="c" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c98a3a"/><stop offset="1" stop-color="#9a6326"/>
+    </linearGradient>
+  </defs>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#f)"/>
+  <!-- corps -->
+  <path d="M512 250 C 380 250 300 330 300 470 L 300 640 C 300 770 400 830 512 830 C 624 830 724 770 724 640 L 724 470 C 724 330 644 250 512 250 Z" fill="url(#c)"/>
+  <!-- aigrettes -->
+  <path d="M318 395 L 300 250 L 420 320 Z" fill="#9a6326"/>
+  <path d="M706 395 L 724 250 L 604 320 Z" fill="#9a6326"/>
+  <!-- ventre -->
+  <ellipse cx="512" cy="680" rx="140" ry="125" fill="#f3dcb2"/>
+  <path d="M452 640 q 20 18 40 0 M 532 640 q 20 18 40 0 M 482 700 q 20 18 40 0 M 562 700 q 10 10 22 4 M 440 700 q 10 12 22 6" stroke="#c98a3a" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <!-- yeux -->
+  <circle cx="420" cy="465" r="92" fill="#fff"/>
+  <circle cx="604" cy="465" r="92" fill="#fff"/>
+  <circle cx="428" cy="472" r="46" fill="#1d232b"/>
+  <circle cx="596" cy="472" r="46" fill="#1d232b"/>
+  <circle cx="442" cy="456" r="14" fill="#fff"/>
+  <circle cx="610" cy="456" r="14" fill="#fff"/>
+  <!-- bec -->
+  <path d="M482 545 L 542 545 L 512 600 Z" fill="#f2b33d"/>
+</svg>
