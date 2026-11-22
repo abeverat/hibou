@@ -6,6 +6,8 @@ export type TypeErreur =
   | 'version' // version d'API refusée (517) : mettre à jour Hibou
   | 'non-connecte'
   | 'non-implemente'
+  | 'biometrie' // vérification Touch ID / Windows Hello annulée ou refusée
+  | 'verrouille' // appli verrouillée : déverrouiller d'abord
   | 'inconnue';
 
 /** Erreur unique remontée par la couche d'accès ; `message` est affichable tel quel. */
