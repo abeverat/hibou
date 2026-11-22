@@ -7,12 +7,15 @@ import { EmploiDuTemps } from './ecrans/EmploiDuTemps';
 import { CalendrierDevoirs } from './ecrans/CalendrierDevoirs';
 import { Notes } from './ecrans/Notes';
 import { Reglages } from './ecrans/Reglages';
+import {
+  IconeActualiser, IconeAujourdhui, IconeCadenas, IconeCalendrier, IconeDeconnexion, IconeDevoirs, IconeNotes, IconeReglages,
+} from './composants/Icones';
 
 const ONGLETS = [
-  { id: 'aujourdhui', nom: "Aujourd'hui" },
-  { id: 'edt', nom: 'Emploi du temps' },
-  { id: 'devoirs', nom: 'Devoirs & contrôles' },
-  { id: 'notes', nom: 'Notes' },
+  { id: 'aujourdhui', nom: "Aujourd'hui", Icone: IconeAujourdhui },
+  { id: 'edt', nom: 'Emploi du temps', Icone: IconeCalendrier },
+  { id: 'devoirs', nom: 'Devoirs & contrôles', Icone: IconeDevoirs },
+  { id: 'notes', nom: 'Notes', Icone: IconeNotes },
 ] as const;
 type Onglet = (typeof ONGLETS)[number]['id'];
 
@@ -70,14 +73,18 @@ export function App() {
 
   return (
     <div className="appli">
-      <header className="entete">
+      <aside className="barre-laterale">
         <div className="marque">
-          <span className="logo" aria-hidden>🦉</span> Hibou
-          {session.demo && <span className="badge badge-demo">Démo</span>}
+          <span className="logo" aria-hidden>🦉</span>
+          <span className="libelle">Hibou</span>
+          {session.demo && <span className="badge badge-demo libelle">Démo</span>}
         </div>
-        <div className="entete-actions">
-          {compte.eleves.length > 1 ? (
+        {compte.eleves.length > 1 ? (
+          // Deux variantes : « Prénom · classe » (barre large) et le prénom seul (barre réduite).
+          (['complet', 'court'] as const).map((forme) => (
             <select
+              key={forme}
+              className={`choix-eleve ${forme}`}
               aria-label="Enfant"
               value={idEleve ?? ''}
               onChange={async (e) => {
@@ -88,58 +95,70 @@ export function App() {
             >
               {compte.eleves.map((e) => (
                 <option key={e.id} value={e.id}>
-                  {e.prenom} · {e.classe}
+                  {forme === 'complet' ? `${e.prenom} · ${e.classe}` : e.prenom}
                 </option>
               ))}
             </select>
-          ) : (
-            <span className="eleve-nom">{eleve?.prenom} · {eleve?.classe}</span>
-          )}
+          ))
+        ) : (
+          <div className="eleve-nom libelle">{eleve?.prenom} · {eleve?.classe}</div>
+        )}
+        <nav className="navigation" aria-label="Sections">
+          {ONGLETS.map((o) => (
+            <button
+              key={o.id}
+              className={`element-nav ${onglet === o.id ? 'actif' : ''}`}
+              aria-current={onglet === o.id ? 'page' : undefined}
+              title={o.nom}
+              onClick={() => setOnglet(o.id)}
+            >
+              <o.Icone />
+              <span className="libelle">{o.nom}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="barre-pied">
           <button
-            className="bouton-secondaire"
+            className="element-nav"
             title="Recharger les données depuis EcoleDirecte"
             onClick={async () => {
               await api.actualiser();
               setVersion((v) => v + 1);
             }}
           >
-            Actualiser
+            <IconeActualiser />
+            <span className="libelle">Actualiser</span>
           </button>
           {bioActive && (
             <button
-              className="bouton-secondaire"
-              title="Verrouiller Hibou (déverrouillage biométrique)"
+              className="element-nav"
+              title="Verrouiller Hibou"
               onClick={async () => {
                 await api.verrouiller();
                 setVerrouille(await api.estVerrouille());
               }}
             >
-              🔒 Verrouiller
+              <IconeCadenas />
+              <span className="libelle">Verrouiller</span>
             </button>
           )}
-          <button className="bouton-secondaire bouton-icone" title={titreReglages} aria-label={titreReglages} onClick={() => setReglagesOuverts(true)}>
+          <button className="element-nav" title={titreReglages} onClick={() => setReglagesOuverts(true)}>
             <IconeReglages />
+            <span className="libelle">{titreReglages}</span>
           </button>
           <button
-            className="bouton-secondaire"
+            className="element-nav"
+            title="Déconnexion"
             onClick={async () => {
               await api.deconnexion();
               setSession(await api.etat());
             }}
           >
-            Déconnexion
+            <IconeDeconnexion />
+            <span className="libelle">Déconnexion</span>
           </button>
         </div>
-      </header>
-      <nav className="onglets" aria-label="Sections">
-        <div className="onglets-capsule">
-        {ONGLETS.map((o) => (
-          <button key={o.id} className={onglet === o.id ? 'actif' : ''} aria-current={onglet === o.id ? 'page' : undefined} onClick={() => setOnglet(o.id)}>
-            {o.nom}
-          </button>
-        ))}
-        </div>
-      </nav>
+      </aside>
       <main className="contenu">
         {onglet === 'aujourdhui' && <Aujourdhui key={cle} onVoir={setOnglet} />}
         {onglet === 'edt' && <EmploiDuTemps key={cle} />}
@@ -200,15 +219,5 @@ function Verrou({ onDeverrouille, onDeconnecte }: { onDeverrouille: () => void; 
         </button>
       </div>
     </div>
-  );
-}
-
-/** Roue dentée (contour), à la taille du texte des boutons voisins. */
-function IconeReglages() {
-  return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
   );
 }

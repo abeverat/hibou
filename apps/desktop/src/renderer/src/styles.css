@@ -59,14 +59,6 @@ input, select {
 .aide-demo { font-size: 0.85rem; color: var(--discret); margin: 0; }
 .qcm-intro { margin: 0; }
 
-/* En-tête */
-.entete {
-  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
-  padding: 0.7rem 1.2rem; background: var(--surface); border-bottom: 1px solid var(--bord);
-  position: sticky; top: 0; z-index: 1;
-}
-.marque { font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: 0.4rem; }
-.entete-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 .contenu { padding: 1.2rem; max-width: 1200px; margin: 0 auto; }
 
 /* Badges */
@@ -90,9 +82,6 @@ input, select {
 .note { font-weight: 700; display: inline-block; min-width: 3.8em; }
 
 /* Onglets */
-.onglets { display: flex; gap: 0.2rem; padding: 0 1.2rem; background: var(--surface); border-bottom: 1px solid var(--bord); overflow-x: auto; }
-.onglets button { background: none; color: var(--discret); border-radius: 0; border-bottom: 2px solid transparent; padding: 0.7em 0.9em; white-space: nowrap; }
-.onglets button.actif { color: var(--texte); border-bottom-color: var(--accent); font-weight: 600; }
 .contenu:has(.calendrier) { max-width: none; }
 
 /* Boutons-liens */
@@ -381,35 +370,6 @@ button.lien { box-shadow: none; border-radius: 0; }
 input, select { background: var(--verre); border: 1px solid var(--verre-trait); border-radius: 12px; }
 input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* En-tête : barre de verre flottante, sert aussi de barre de titre (glisser la fenêtre). */
-.entete {
-  background: var(--verre); border-bottom: 1px solid var(--verre-trait);
-  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
-  -webkit-app-region: drag; z-index: 5;
-}
-.entete button, .entete select, .entete a, .entete input { -webkit-app-region: no-drag; }
-html[data-plateforme='darwin'] .entete { padding-left: 88px; } /* place des boutons de fenêtre */
-html[data-plateforme='darwin'] .page-connexion::before {
-  content: ''; position: fixed; inset: 0 0 auto 0; height: 36px; -webkit-app-region: drag;
-}
-
-/* Onglets : capsule segmentée, centrée */
-.onglets { display: flex; justify-content: center; background: none; border-bottom: none; padding: 0.8rem 1.2rem 0.2rem; overflow: visible; }
-.onglets-capsule { max-width: 100%; overflow-x: auto; }
-.onglets button {
-  border-bottom: none; border-radius: 999px; padding: 0.45em 1.1em; box-shadow: none; color: var(--discret);
-}
-.onglets button:hover { color: var(--texte); }
-.onglets button.actif {
-  background: var(--verre-fort); color: var(--texte);
-  box-shadow: inset 0 1px 0 var(--verre-liseré), 0 1px 4px rgb(0 0 0 / 0.12);
-}
-.onglets-capsule {
-  display: inline-flex; gap: 2px; padding: 4px; border-radius: 999px;
-  background: var(--verre); border: 1px solid var(--verre-trait);
-  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
-  box-shadow: inset 0 1px 0 var(--verre-liseré), var(--verre-ombre);
-}
 .onglets-periodes button { border-radius: 999px; background: var(--verre); border-color: var(--verre-trait); }
 
 /* Calendriers */
@@ -435,3 +395,55 @@ html[data-plateforme='darwin'] .page-connexion::before {
 /* La consigne est un <button> : pas de forme « capsule » ni de reflet (ils rognaient le texte). */
 .cal-consigne, .cal-consigne:active { border-radius: 4px; box-shadow: none; transform: none; }
 
+
+/* ==========================================================================
+   Barre latérale (navigation) — en verre, pleine hauteur ; sur macOS elle porte les
+   boutons de fenêtre et sert de poignée pour déplacer la fenêtre.
+   ========================================================================== */
+.appli { display: grid; grid-template-columns: 228px minmax(0, 1fr); min-height: 100vh; }
+/* Les marges auto d'un élément de grille l'empêcheraient de s'étirer : on fixe la largeur. */
+.appli > .contenu { width: 100%; }
+.choix-eleve.court { display: none; }
+.barre-laterale {
+  position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 0.9rem;
+  padding: 1rem 0.75rem; overflow-y: auto;
+  background: var(--verre); border-right: 1px solid var(--verre-trait);
+  -webkit-backdrop-filter: var(--verre-flou); backdrop-filter: var(--verre-flou);
+  box-shadow: inset -1px 0 0 var(--verre-liseré);
+  -webkit-app-region: drag; z-index: 5;
+}
+.barre-laterale button, .barre-laterale select { -webkit-app-region: no-drag; }
+html[data-plateforme='darwin'] .barre-laterale { padding-top: 54px; }
+html[data-plateforme='darwin'] .page-connexion::before {
+  content: ''; position: fixed; inset: 0 0 auto 0; height: 36px; -webkit-app-region: drag;
+}
+.marque { display: flex; align-items: center; gap: 0.5rem; font-weight: 700; font-size: 1.2rem; padding: 0 0.45rem; }
+.marque .badge { margin-left: 0; }
+.choix-eleve { width: 100%; }
+.eleve-nom { padding: 0 0.5rem; color: var(--discret); font-size: 0.9rem; }
+.navigation, .barre-pied { display: flex; flex-direction: column; gap: 2px; }
+.barre-pied { margin-top: auto; padding-top: 0.6rem; border-top: 1px solid var(--verre-trait); }
+.element-nav {
+  display: flex; align-items: center; gap: 0.7rem; width: 100%; text-align: left;
+  background: none; color: var(--texte); border-radius: 10px; padding: 0.55rem 0.7rem; box-shadow: none; font-weight: 500;
+}
+.element-nav svg { flex: none; color: var(--discret); }
+.element-nav:hover { background: color-mix(in srgb, var(--texte) 7%, transparent); }
+.element-nav.actif {
+  background: var(--verre-fort); font-weight: 600;
+  box-shadow: inset 0 1px 0 var(--verre-liseré), 0 1px 3px rgb(0 0 0 / 0.12);
+}
+.element-nav.actif svg { color: var(--accent); }
+.barre-pied .element-nav { padding: 0.45rem 0.7rem; color: var(--discret); font-size: 0.92rem; }
+.barre-pied .element-nav:hover { color: var(--texte); }
+
+/* Fenêtre étroite : icônes seules (le nom s'affiche au survol). */
+@media (max-width: 960px) {
+  .appli { grid-template-columns: 76px minmax(0, 1fr); }
+  .barre-laterale { padding-left: 0.5rem; padding-right: 0.5rem; align-items: center; }
+  .barre-laterale .libelle { display: none; }
+  .marque { justify-content: center; padding: 0; }
+  .element-nav, .barre-pied .element-nav { justify-content: center; padding: 0.6rem; }
+  .choix-eleve.complet { display: none; }
+  .choix-eleve.court { display: block; font-size: 0.78rem; padding: 0.35em 0.3em; width: 100%; }
+}
