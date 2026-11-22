@@ -1,0 +1,292 @@
+:root {
+  color-scheme: light dark;
+  --fond: #f5f6f8;
+  --surface: #ffffff;
+  --bord: #e1e4e8;
+  --texte: #1c1f23;
+  --discret: #6a737d;
+  --accent: #3b7ddd;
+  --rouge: #d93f3f;
+  --orange: #e08a1e;
+  --rayon: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #111418;
+    --surface: #1a1e24;
+    --bord: #2b3038;
+    --texte: #e6e8eb;
+    --discret: #8b949e;
+    --accent: #5b9bf0;
+    --rouge: #f06262;
+    --orange: #f0a040;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fond); color: var(--texte); }
+h1, h2 { margin: 0 0 0.6em; }
+h2 { font-size: 1.05rem; }
+.discret { color: var(--discret); }
+.mono { font-variant-numeric: tabular-nums; }
+.chargement-page { padding: 3rem; text-align: center; color: var(--discret); }
+
+button {
+  font: inherit; border: none; border-radius: 8px; padding: 0.55em 1em; cursor: pointer;
+  background: var(--accent); color: white;
+}
+button:disabled { opacity: 0.6; cursor: default; }
+.bouton-secondaire { background: transparent; color: var(--texte); border: 1px solid var(--bord); }
+input, select {
+  font: inherit; color: inherit; background: var(--fond); border: 1px solid var(--bord);
+  border-radius: 8px; padding: 0.5em 0.7em;
+}
+
+.carte { background: var(--surface); border: 1px solid var(--bord); border-radius: var(--rayon); padding: 1rem 1.2rem; }
+
+/* Connexion */
+.page-connexion { min-height: 100vh; display: grid; place-items: center; padding: 1rem; }
+.carte-connexion { width: min(400px, 100%); }
+.carte-connexion form { display: flex; flex-direction: column; gap: 0.9rem; margin-top: 1rem; }
+.carte-connexion label { display: flex; flex-direction: column; gap: 0.3rem; }
+.carte-connexion fieldset { border: 1px solid var(--bord); border-radius: 8px; display: flex; flex-direction: column; gap: 0.4rem; }
+.carte-connexion legend { font-weight: 600; padding: 0 0.3rem; }
+.carte-connexion label.choix { flex-direction: row; align-items: center; gap: 0.5rem; cursor: pointer; }
+.erreur { color: var(--rouge); margin: 0; }
+.aide-demo { font-size: 0.85rem; color: var(--discret); margin: 0; }
+.qcm-intro { margin: 0; }
+
+/* En-tête */
+.entete {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+  padding: 0.7rem 1.2rem; background: var(--surface); border-bottom: 1px solid var(--bord);
+  position: sticky; top: 0; z-index: 1;
+}
+.marque { font-weight: 700; font-size: 1.15rem; display: flex; align-items: center; gap: 0.4rem; }
+.entete-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.contenu { padding: 1.2rem; max-width: 1200px; margin: 0 auto; }
+
+/* Badges */
+.badge {
+  display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 0.1em 0.5em; margin-left: 0.4em;
+  border-radius: 999px; background: var(--bord); color: var(--texte); vertical-align: middle;
+}
+.badge-rouge { background: var(--rouge); color: white; }
+.badge-orange { background: var(--orange); color: white; }
+.badge-demo { background: var(--orange); color: white; }
+
+/* Vérification (étape 1) */
+.bandeau-etape { background: var(--surface); border: 1px dashed var(--bord); border-radius: var(--rayon); padding: 0.6rem 1rem; color: var(--discret); margin-top: 0; }
+.grille-chiffres { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.8rem; margin-bottom: 0.8rem; }
+.chiffre-valeur { font-size: 2rem; font-weight: 700; }
+.grille-cartes { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0.8rem; }
+.liste { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+.liste li.annule { text-decoration: line-through; color: var(--discret); }
+.liste li.fait { color: var(--discret); }
+.pastille { display: inline-block; width: 0.7em; height: 0.7em; border-radius: 50%; margin-right: 0.4em; }
+.note { font-weight: 700; display: inline-block; min-width: 3.8em; }
+
+/* Onglets */
+.onglets { display: flex; gap: 0.2rem; padding: 0 1.2rem; background: var(--surface); border-bottom: 1px solid var(--bord); overflow-x: auto; }
+.onglets button { background: none; color: var(--discret); border-radius: 0; border-bottom: 2px solid transparent; padding: 0.7em 0.9em; white-space: nowrap; }
+.onglets button.actif { color: var(--texte); border-bottom-color: var(--accent); font-weight: 600; }
+.contenu:has(.calendrier) { max-width: none; }
+
+/* Boutons-liens */
+button.lien { background: none; color: inherit; padding: 0; text-align: left; text-decoration: underline; text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); text-underline-offset: 2px; }
+button.lien:hover { text-decoration-color: currentColor; }
+button.lien-controle { color: var(--rouge); font-weight: 700; }
+.petit { font-size: 0.8rem; }
+
+/* Calendrier des devoirs */
+.cal-barre { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 0.8rem; }
+.cal-nav { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.cal-nav button { padding: 0.4em 0.8em; }
+.cal-titre { margin: 0 0 0 0.5rem; font-size: 1.1rem; }
+.cal-resume .badge { font-size: 0.85rem; }
+
+.cal-grille { display: grid; grid-template-columns: 2.6rem repeat(var(--nb-jours), minmax(0, 1fr)); gap: 0.4rem; align-items: end; }
+.cal-heures { position: relative; align-self: end; }
+.cal-heures span { position: absolute; right: 0.3rem; transform: translateY(-50%); font-size: 0.75rem; color: var(--discret); }
+.cal-jour { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; align-self: stretch; justify-content: flex-end; }
+.cal-jour-titre { text-transform: capitalize; font-weight: 600; padding: 0.3rem 0.4rem; border-radius: 8px; }
+.cal-jour.aujourdhui .cal-jour-titre { background: var(--accent); color: white; }
+.cal-jour.aujourdhui .cal-jour-titre .discret { color: inherit; opacity: 0.85; }
+.cal-sans-creneau { background: var(--surface); border: 1px dashed var(--bord); border-radius: 8px; padding: 0.3rem 0.45rem; display: flex; flex-direction: column; gap: 0.2rem; }
+.cal-colonne { position: relative; background: var(--surface); border: 1px solid var(--bord); border-radius: 8px; }
+.cal-ligne-heure { position: absolute; left: 0; right: 0; border-top: 1px solid var(--bord); opacity: 0.6; }
+.cal-vide-jour { position: absolute; inset: 0; display: grid; place-items: center; color: var(--discret); }
+
+.cal-cours {
+  position: absolute; left: 3px; right: 3px; border-radius: 7px; padding: 0.25rem 0.45rem; overflow: hidden;
+  font-size: 0.85rem; line-height: 1.3; z-index: 1;
+}
+.cal-cours:hover { z-index: 2; overflow: visible; }
+.cal-cours.plein {
+  background: color-mix(in srgb, var(--couleur) 22%, var(--surface));
+  border-left: 4px solid var(--couleur);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+}
+.cal-cours.plein:hover { box-shadow: 0 4px 14px rgb(0 0 0 / 0.35); }
+.cal-cours.avec-controle { outline: 2px solid var(--rouge); outline-offset: -2px; }
+.cal-cours.vide {
+  background: color-mix(in srgb, var(--discret) 10%, var(--surface));
+  border-left: 4px solid color-mix(in srgb, var(--discret) 45%, transparent);
+  color: var(--discret); opacity: 0.6;
+}
+.cal-cours.annule .cal-matiere { text-decoration: line-through; }
+.cal-cours-titre { display: flex; align-items: center; gap: 0.2rem; font-weight: 600; }
+.cal-matiere { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cal-cours-info { font-size: 0.75rem; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-rien { font-size: 0.75rem; font-style: italic; }
+.cal-devoir { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; margin-top: 0.15rem; }
+.cal-devoir input { margin: 0; accent-color: var(--accent); }
+.cal-devoir.fait button.lien { text-decoration: line-through; opacity: 0.6; }
+.cal-devoir .badge { margin-left: 0; }
+.cal-jour.passe .cal-cours.plein { opacity: 0.85; }
+
+.cal-onglets-jours { display: none; }
+
+@media (max-width: 760px) {
+  .cal-onglets-jours { display: flex; gap: 0.3rem; margin-bottom: 0.6rem; }
+  .cal-onglets-jours button {
+    flex: 1; background: var(--surface); color: var(--texte); border: 1px solid var(--bord);
+    padding: 0.35em 0; line-height: 1.2; text-transform: capitalize; font-size: 0.85rem;
+  }
+  .cal-onglets-jours button.aujourdhui { border-color: var(--accent); }
+  .cal-onglets-jours button.actif { background: var(--accent); color: white; border-color: var(--accent); }
+  .cal-grille { grid-template-columns: 2.6rem minmax(0, 1fr); }
+  .cal-jour:not(.jour-mobile) { display: none; }
+  .cal-titre { margin: 0.3rem 0 0; flex-basis: 100%; font-size: 1rem; }
+}
+
+/* Panneau de détail */
+.voile { position: fixed; inset: 0; background: rgb(0 0 0 / 0.5); display: grid; place-items: center; padding: 1rem; z-index: 10; }
+.panneau { width: min(560px, 100%); max-height: 85vh; overflow: auto; }
+.panneau-entete { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.panneau-entete h2 { margin: 0; }
+.panneau-entete button { padding: 0.25em 0.6em; }
+.contenu-devoir { line-height: 1.55; }
+.contenu-devoir a { color: var(--accent); }
+.documents h3 { font-size: 0.95rem; margin: 1rem 0 0.4rem; }
+.documents ul { margin: 0; padding-left: 0; list-style: none; }
+.cal-consigne {
+  flex-basis: 100%; background: none; color: inherit; padding: 0; text-align: left; font-size: 0.78rem;
+  line-height: 1.3; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.cal-consigne:hover { opacity: 1; text-decoration: underline; }
+.cal-devoir.fait .cal-consigne { text-decoration: line-through; opacity: 0.5; }
+
+/* ---------- Commun ---------- */
+:root { --serie-moyenne: #3b7ddd; --serie-notes: #b7791f; --bleu: #3b7ddd; }
+@media (prefers-color-scheme: dark) { :root { --serie-moyenne: #4a8ae6; --serie-notes: #b8812e; --bleu: #4a8ae6; } }
+.badge-bleu { background: var(--bleu); color: white; }
+.premiere-majuscule::first-letter { text-transform: uppercase; }
+.vide-grise { color: var(--discret); opacity: 0.7; font-style: italic; margin: 0.3rem 0; }
+.carte-titre { display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+.carte-titre h2 { margin: 0; }
+.liste li { display: flex; gap: 0.4rem; align-items: baseline; }
+.contenu:has(.calendrier) { max-width: none; }
+
+/* ---------- Aujourd'hui ---------- */
+.salutation { font-size: 1.4rem; margin-bottom: 0.8rem; }
+.tdb-grille { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 0.8rem; }
+.frise { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+.frise li {
+  display: flex; gap: 0.6rem; align-items: center; padding: 0.35rem 0.6rem; border-radius: 8px;
+  border-left: 4px solid var(--couleur); background: color-mix(in srgb, var(--couleur) 10%, var(--surface));
+}
+.frise li.en-cours { background: color-mix(in srgb, var(--couleur) 30%, var(--surface)); box-shadow: 0 0 0 2px var(--bleu); }
+.frise li.fini { opacity: 0.5; }
+.frise li.annule .frise-matiere { text-decoration: line-through; }
+.frise-heure { font-variant-numeric: tabular-nums; color: var(--discret); min-width: 3.2em; }
+.frise-matiere { font-weight: 600; flex: 1; }
+.compte-a-rebours {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 0.7rem; align-items: baseline; text-align: left;
+  background: color-mix(in srgb, var(--rouge) 12%, var(--surface)); color: var(--texte);
+  border: 1px solid color-mix(in srgb, var(--rouge) 40%, transparent); border-radius: 10px; padding: 0.8rem 1rem; width: 100%;
+}
+.rebours-nombre { font-size: 2.6rem; font-weight: 800; line-height: 1; color: var(--rouge); grid-row: span 2; }
+.rebours-unite { color: var(--discret); }
+.rebours-matiere { font-weight: 700; font-size: 1.1rem; grid-column: 2; }
+.compte-a-rebours .discret { grid-column: 1 / -1; margin-top: 0.4rem; }
+.tdb-controle .lien { margin-top: 0.5rem; }
+.liste-devoirs { display: flex; flex-direction: column; gap: 0.35rem; }
+.liste-devoirs .cal-devoir { margin: 0; }
+
+/* ---------- Emploi du temps ---------- */
+.cal-cours.edt { border-left-width: 4px; }
+.cal-cours.edt.annule { opacity: 0.55; }
+.cal-cours.en-cours { box-shadow: 0 0 0 2px var(--bleu); }
+.cal-maintenant { position: absolute; left: 0; right: 0; border-top: 2px solid var(--rouge); z-index: 3; }
+.cal-maintenant::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--rouge); }
+
+/* ---------- Calendrier des contrôles ---------- */
+.prochain-controle { margin: 0 0 0.8rem; }
+.mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 0.6rem; }
+.mois-entete { text-align: center; color: var(--discret); font-size: 0.8rem; padding-bottom: 0.2rem; }
+.mois-case {
+  min-height: 92px; background: var(--surface); border: 1px solid var(--bord); border-radius: 8px; padding: 0.3rem;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.mois-case.hors-mois { opacity: 0.35; }
+.mois-case.passe:not(.avec) { opacity: 0.55; }
+.mois-case.aujourdhui { border-color: var(--bleu); box-shadow: inset 0 0 0 1px var(--bleu); }
+.mois-case.aujourdhui .mois-num { color: var(--bleu); font-weight: 700; }
+.mois-num { font-size: 0.8rem; color: var(--discret); }
+.puce-controle {
+  background: var(--rouge); color: white; font-size: 0.78rem; padding: 0.15rem 0.35rem; border-radius: 5px; text-align: left;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.puce-heure { opacity: 0.85; font-variant-numeric: tabular-nums; }
+@media (max-width: 760px) {
+  .mois-case { min-height: 58px; padding: 0.15rem; }
+  .puce-controle { font-size: 0.65rem; padding: 0.1rem 0.2rem; }
+  .puce-heure { display: none; }
+}
+
+/* ---------- Notes ---------- */
+.onglets-periodes { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.onglets-periodes button { background: var(--surface); color: var(--texte); border: 1px solid var(--bord); padding: 0.4em 0.9em; }
+.onglets-periodes button.actif { background: var(--bleu); color: white; border-color: var(--bleu); }
+.notes { display: flex; flex-direction: column; gap: 0.8rem; }
+.notes-haut { display: grid; grid-template-columns: minmax(230px, 300px) 1fr; gap: 0.8rem; }
+@media (max-width: 760px) { .notes-haut { grid-template-columns: 1fr; } }
+.hero-nombre { font-size: 3rem; font-weight: 800; line-height: 1.1; margin: 0.2rem 0; font-variant-numeric: tabular-nums; }
+.simulation-ecart { color: var(--bleu); font-weight: 600; }
+.graphique-zone { width: 100%; min-width: 0; }
+.table-matieres { width: 100%; border-collapse: collapse; }
+.table-matieres th, .table-matieres td { text-align: left; padding: 0.5rem 0.4rem; border-bottom: 1px solid var(--bord); vertical-align: middle; }
+.table-matieres thead th { font-size: 0.8rem; color: var(--discret); font-weight: 600; }
+.table-matieres .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ligne-matiere { cursor: pointer; }
+.ligne-matiere:hover { background: color-mix(in srgb, var(--bleu) 6%, transparent); }
+.ligne-matiere.ouverte { background: color-mix(in srgb, var(--bleu) 10%, transparent); }
+.ligne-matiere.grise { opacity: 0.5; cursor: default; }
+.puces-notes { display: flex; flex-wrap: wrap; gap: 4px; }
+.puce-note {
+  display: inline-flex; align-items: baseline; gap: 1px; padding: 0.1rem 0.45rem; border-radius: 6px;
+  background: var(--fond); border: 1px solid var(--bord); font-weight: 600; font-variant-numeric: tabular-nums;
+}
+.puce-note sub, .puce-note sup { font-size: 0.65em; font-weight: 400; color: var(--discret); }
+.puce-note.grise { opacity: 0.45; font-weight: 400; text-decoration: line-through; }
+.puce-note.fictive { border-style: dashed; border-color: var(--bleu); color: var(--bleu); }
+.detail-notes > td { background: var(--fond); padding: 0.3rem 0.6rem; }
+.detail-notes table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.detail-notes td { border: none !important; padding: 0.25rem 0.4rem !important; }
+.detail-notes tr.grise { opacity: 0.5; }
+.simulateur-form { display: flex; gap: 0.6rem; align-items: flex-end; flex-wrap: wrap; }
+.simulateur-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: var(--discret); }
+.simulateur-form input, .simulateur-form select { color: var(--texte); }
+.fictives { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; margin-top: 0.7rem; }
+.fictives .lien { margin-left: 0.3rem; text-decoration: none; }
+@media (max-width: 600px) {
+  .table-matieres thead { display: none; }
+  .table-matieres .ligne-matiere { display: grid; grid-template-columns: 1fr auto; }
+  .table-matieres .ligne-matiere > * { border: none; }
+  .table-matieres .ligne-matiere > td:nth-child(3) { grid-column: 1 / -1; }
+  .table-matieres .ligne-matiere { border-bottom: 1px solid var(--bord); }
+}

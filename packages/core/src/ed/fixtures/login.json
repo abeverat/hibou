@@ -1,0 +1,98 @@
+{
+  "host": "HTTP193",
+  "code": 200,
+  "token": "",
+  "message": "",
+  "data": {
+    "accounts": [
+      {
+        "idLogin": 120001,
+        "id": 5500,
+        "uid": "",
+        "identifiant": "demo",
+        "typeCompte": "1",
+        "codeOgec": "000000000",
+        "main": true,
+        "lastConnexion": "2025-01-05 19:02",
+        "civilite": "Mme",
+        "prenom": "Claire",
+        "particule": "",
+        "nom": "MARTIN",
+        "email": "",
+        "anneeScolaireCourante": "2024-2025",
+        "nomEtablissement": "Collège Démo",
+        "logoEtablissement": "",
+        "couleurAgendaEtablissement": "#1796b0",
+        "modules": [],
+        "profile": {
+          "eleves": [
+            {
+              "id": 3101,
+              "prenom": "Léa",
+              "nom": "MARTIN",
+              "sexe": "F",
+              "infoEDT": "",
+              "idEtablissement": "7",
+              "nomEtablissement": "Collège Démo",
+              "idReelEtab": "7",
+              "isPrimaire": false,
+              "photo": "",
+              "classe": {
+                "id": 412,
+                "code": "4B",
+                "libelle": "4EME B",
+                "estNote": 1
+              },
+              "modules": [
+                {
+                  "code": "EDT",
+                  "enable": true
+                },
+                {
+                  "code": "CAHIER_DE_TEXTES",
+                  "enable": true
+                },
+                {
+                  "code": "NOTES",
+                  "enable": true
+                }
+              ]
+            },
+            {
+              "id": 3102,
+              "prenom": "Hugo",
+              "nom": "MARTIN",
+              "sexe": "M",
+              "infoEDT": "",
+              "idEtablissement": "7",
+              "nomEtablissement": "Collège Démo",
+              "idReelEtab": "7",
+              "isPrimaire": false,
+              "photo": "",
+              "classe": {
+                "id": 611,
+                "code": "6A",
+                "libelle": "6EME A",
+                "estNote": 1
+              },
+              "modules": [
+                {
+                  "code": "EDT",
+                  "enable": true
+                },
+                {
+                  "code": "CAHIER_DE_TEXTES",
+                  "enable": true
+                },
+                {
+                  "code": "NOTES",
+                  "enable": true
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

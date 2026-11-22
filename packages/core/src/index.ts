@@ -1,0 +1,10 @@
+export * from './types';
+export * from './dates';
+export * from './service';
+export type { ResultatConnexion } from './ed/client';
+export type { EdBackend } from './ed/backend';
+export { ErreurEd, type TypeErreur } from './ed/erreurs';
+export { DemoBackend } from './ed/demo';
+export * from './calendrier';
+export * from './calc/moyennes';
+export * from './ics';

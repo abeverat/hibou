@@ -1,0 +1,486 @@
+{
+  "2025-01-07": {
+    "date": "2025-01-07",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "MATHEMATIQUES",
+        "codeMatiere": "MATHS",
+        "nomProf": "M. GARNIER P.",
+        "id": 8800,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8800,
+          "contenu": "PHA+RXhlcmNpY2VzIDEyLCAxMyBldCAxNSBwYWdlIDg0ICjDqXF1YXRpb25zKS48L3A+",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-03",
+          "effectue": true,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8800,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      },
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "PHYSIQUE-CHIMIE",
+        "codeMatiere": "PH-CH",
+        "nomProf": "Mme CARON L.",
+        "id": 8801,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8801,
+          "contenu": "PHA+QXBwcmVuZHJlIGxhIGxlw6dvbiBzdXIgbGVzIDxiPmF0b21lcyBldCBtb2zDqWN1bGVzPC9iPi48L3A+",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-03",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8801,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-08": {
+    "date": "2025-01-08",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "HISTOIRE-GEOGRAPHIE",
+        "codeMatiere": "HIGEO",
+        "nomProf": "Mme FONTAINE A.",
+        "id": 8802,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8802,
+          "contenu": "PHA+TGlyZSBsZXMgcGFnZXMgMTEyIMOgIDExNSBldCByw6lwb25kcmUgYXV4IHF1ZXN0aW9ucyAxIMOgIDQuPC9wPg==",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-06",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8802,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-09": {
+    "date": "2025-01-09",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "ANGLAIS LV1",
+        "codeMatiere": "AGL1",
+        "nomProf": "Mme WALKER J.",
+        "id": 8803,
+        "interrogation": true,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8803,
+          "contenu": "PHA+PGI+Q29udHLDtGxlPC9iPiA6IGlycmVndWxhciB2ZXJicyAobGlzdGUgMikgKyBwcsOpdMOpcml0LjwvcD4=",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-02",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8803,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      },
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "FRANCAIS",
+        "codeMatiere": "FRANC",
+        "nomProf": "Mme LEROY C.",
+        "id": 8804,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8804,
+          "contenu": "PHA+UsOpZGFjdGlvbiA6IDxpPnJhY29udGVyIHVuIHNvdXZlbmlyIGQnZW5mYW5jZTwvaT4gKDIwIGxpZ25lcyBtaW5pbXVtKS48L3A+PHVsPjxsaT5VdGlsaXNlciBsZSBwYXNzw6kgc2ltcGxlPC9saT48bGk+UmVsaXJlIGwnb3J0aG9ncmFwaGU8L2xpPjwvdWw+",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-06",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8804,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-10": {
+    "date": "2025-01-10",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "MATHEMATIQUES",
+        "codeMatiere": "MATHS",
+        "nomProf": "M. GARNIER P.",
+        "id": 8805,
+        "interrogation": true,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8805,
+          "contenu": "PHA+PGI+Q29udHLDtGxlIGNoYXBpdHJlIDU8L2I+IDogY2FsY3VsIGxpdHTDqXJhbCwgZMOpdmVsb3BwZXIgZXQgZmFjdG9yaXNlci48L3A+PHA+UmV2b2lyIGxlcyBmaWNoZXMgZXQgbGVzIGV4ZXJjaWNlcyBjb3JyaWfDqXMuPC9wPg==",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-03",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [
+            {
+              "id": 30551,
+              "libelle": "fiche-revision-ch5.pdf",
+              "date": "2025-01-03",
+              "taille": 182340,
+              "type": "FICHIER_CDT",
+              "signatureDemandee": false,
+              "signature": {}
+            }
+          ],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8805,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-13": {
+    "date": "2025-01-13",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "SCIENCES VIE & TERRE",
+        "codeMatiere": "SVT",
+        "nomProf": "M. MOREL T.",
+        "id": 8806,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8806,
+          "contenu": "PHA+Q29tcGzDqXRlciBsZSBzY2jDqW1hIGRlIGxhIGRpZ2VzdGlvbiAoZmljaGUgZGlzdHJpYnXDqWUpLjwvcD4=",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-06",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8806,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-14": {
+    "date": "2025-01-14",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "ESPAGNOL LV2",
+        "codeMatiere": "ESP2",
+        "nomProf": "M. RUIZ D.",
+        "id": 8807,
+        "interrogation": false,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8807,
+          "contenu": "PHA+QXBwcmVuZHJlIGxlIHZvY2FidWxhaXJlIGRlIGxhIGZhbWlsbGUsIHBhZ2UgNDYuPC9wPg==",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-07",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8807,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-16": {
+    "date": "2025-01-16",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "HISTOIRE-GEOGRAPHIE",
+        "codeMatiere": "HIGEO",
+        "nomProf": "Mme FONTAINE A.",
+        "id": 8808,
+        "interrogation": true,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8808,
+          "contenu": "PHA+PGI+w4l2YWx1YXRpb248L2I+IDogbGEgUsOpdm9sdXRpb24gZnJhbsOnYWlzZSAoZGF0ZXMgZXQgZMOpZmluaXRpb25zKS48L3A+",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-06",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8808,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-20": {
+    "date": "2025-01-20",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "PHYSIQUE-CHIMIE",
+        "codeMatiere": "PH-CH",
+        "nomProf": "Mme CARON L.",
+        "id": 8809,
+        "interrogation": true,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8809,
+          "contenu": "PHA+PGI+Q29udHLDtGxlPC9iPiA6IGxhIG1hdGnDqHJlIGV0IHNlcyB0cmFuc2Zvcm1hdGlvbnMuPC9wPg==",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-09",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8809,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  },
+  "2025-01-23": {
+    "date": "2025-01-23",
+    "matieres": [
+      {
+        "entityCode": "4B",
+        "entityLibelle": "4EME B",
+        "entityType": "C",
+        "matiere": "FRANCAIS",
+        "codeMatiere": "FRANC",
+        "nomProf": "Mme LEROY C.",
+        "id": 8810,
+        "interrogation": true,
+        "blogActif": false,
+        "nbJourMaxRenduDevoir": 0,
+        "aFaire": {
+          "idDevoir": 8810,
+          "contenu": "PHA+PGI+Q29udHLDtGxlIGRlIGxlY3R1cmU8L2I+IDogPGk+TGUgSG9ybGE8L2k+LCBkZSBNYXVwYXNzYW50LjwvcD4=",
+          "rendreEnLigne": false,
+          "donneLe": "2025-01-09",
+          "effectue": false,
+          "ressource": "",
+          "ressourceDocuments": [],
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": [],
+          "documentsRendus": [],
+          "contenuDeSeance": {
+            "contenu": "",
+            "documents": [],
+            "commentaires": []
+          }
+        },
+        "contenuDeSeance": {
+          "idDevoir": 8810,
+          "contenu": "",
+          "documents": [],
+          "commentaires": [],
+          "elementsProg": [],
+          "liensManuel": []
+        }
+      }
+    ]
+  }
+}

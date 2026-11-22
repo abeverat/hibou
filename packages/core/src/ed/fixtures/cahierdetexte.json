@@ -1,0 +1,147 @@
+{
+  "host": "HTTP193",
+  "code": 200,
+  "token": "",
+  "message": "",
+  "data": {
+    "2025-01-07": [
+      {
+        "matiere": "MATHEMATIQUES",
+        "codeMatiere": "MATHS",
+        "aFaire": true,
+        "idDevoir": 8800,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-03",
+        "effectue": true,
+        "interrogation": false,
+        "rendreEnLigne": false
+      },
+      {
+        "matiere": "PHYSIQUE-CHIMIE",
+        "codeMatiere": "PH-CH",
+        "aFaire": true,
+        "idDevoir": 8801,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-03",
+        "effectue": false,
+        "interrogation": false,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-08": [
+      {
+        "matiere": "HISTOIRE-GEOGRAPHIE",
+        "codeMatiere": "HIGEO",
+        "aFaire": true,
+        "idDevoir": 8802,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-06",
+        "effectue": false,
+        "interrogation": false,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-09": [
+      {
+        "matiere": "ANGLAIS LV1",
+        "codeMatiere": "AGL1",
+        "aFaire": true,
+        "idDevoir": 8803,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-02",
+        "effectue": false,
+        "interrogation": true,
+        "rendreEnLigne": false
+      },
+      {
+        "matiere": "FRANCAIS",
+        "codeMatiere": "FRANC",
+        "aFaire": true,
+        "idDevoir": 8804,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-06",
+        "effectue": false,
+        "interrogation": false,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-10": [
+      {
+        "matiere": "MATHEMATIQUES",
+        "codeMatiere": "MATHS",
+        "aFaire": true,
+        "idDevoir": 8805,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-03",
+        "effectue": false,
+        "interrogation": true,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-13": [
+      {
+        "matiere": "SCIENCES VIE & TERRE",
+        "codeMatiere": "SVT",
+        "aFaire": true,
+        "idDevoir": 8806,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-06",
+        "effectue": false,
+        "interrogation": false,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-14": [
+      {
+        "matiere": "ESPAGNOL LV2",
+        "codeMatiere": "ESP2",
+        "aFaire": true,
+        "idDevoir": 8807,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-07",
+        "effectue": false,
+        "interrogation": false,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-16": [
+      {
+        "matiere": "HISTOIRE-GEOGRAPHIE",
+        "codeMatiere": "HIGEO",
+        "aFaire": true,
+        "idDevoir": 8808,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-06",
+        "effectue": false,
+        "interrogation": true,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-20": [
+      {
+        "matiere": "PHYSIQUE-CHIMIE",
+        "codeMatiere": "PH-CH",
+        "aFaire": true,
+        "idDevoir": 8809,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-09",
+        "effectue": false,
+        "interrogation": true,
+        "rendreEnLigne": false
+      }
+    ],
+    "2025-01-23": [
+      {
+        "matiere": "FRANCAIS",
+        "codeMatiere": "FRANC",
+        "aFaire": true,
+        "idDevoir": 8810,
+        "documentsAFaire": false,
+        "donneLe": "2025-01-09",
+        "effectue": false,
+        "interrogation": true,
+        "rendreEnLigne": false
+      }
+    ]
+  }
+}
