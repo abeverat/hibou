@@ -1,9 +1,29 @@
 /** Grille horaire d'une semaine (vue jour sur téléphone), partagée par l'emploi du temps et les devoirs. */
-import { useMemo, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Cours } from '@hibou/core';
 import { fmt, lundiParDefaut, minutes } from '../format';
 
-const PX_PAR_MINUTE = 1.8;
+/** Échelle verticale : la journée tient dans la fenêtre, sans descendre sous un minimum lisible. */
+const PX_MIN = 0.85;
+const PX_MAX = 1.8;
+const MARGE_BAS = 16;
+
+function useEchelle(plageMinutes: number) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [px, setPx] = useState(1.2);
+  useLayoutEffect(() => {
+    const calculer = () => {
+      const colonne = ref.current?.querySelector('.cal-colonne');
+      if (!colonne) return;
+      const dispo = window.innerHeight - colonne.getBoundingClientRect().top - MARGE_BAS;
+      setPx(Math.min(PX_MAX, Math.max(PX_MIN, dispo / plageMinutes)));
+    };
+    calculer();
+    window.addEventListener('resize', calculer);
+    return () => window.removeEventListener('resize', calculer);
+  }, [plageMinutes]);
+  return { ref, px };
+}
 
 export interface RenduCours {
   className: string;
@@ -29,6 +49,7 @@ export function GrilleSemaine({
       fin: Math.ceil(Math.max(...cours.map((x) => minutes(x.fin))) / 60) * 60,
     };
   }, [cours]);
+  const { ref, px: PX_PAR_MINUTE } = useEchelle(plage.fin - plage.debut);
   const hauteur = (plage.fin - plage.debut) * PX_PAR_MINUTE;
   const heures: number[] = [];
   for (let m = plage.debut; m <= plage.fin; m += 60) heures.push(m);
@@ -50,7 +71,11 @@ export function GrilleSemaine({
           </button>
         ))}
       </div>
-      <div className="cal-grille" style={{ ['--nb-jours' as string]: jours.length }}>
+      <div
+        ref={ref}
+        className={`cal-grille ${PX_PAR_MINUTE < 1.3 ? 'compact' : ''}`}
+        style={{ ['--nb-jours' as string]: jours.length }}
+      >
         <div className="cal-heures" style={{ height: hauteur }}>
           {heures.map((m) => (
             <span key={m} style={{ top: (m - plage.debut) * PX_PAR_MINUTE }}>{m / 60}h</span>
@@ -84,6 +109,7 @@ export function GrilleSemaine({
                       className={`cal-cours ${r.className} ${c.annule ? 'annule' : ''}`}
                       style={{
                         top: (minutes(c.debut) - plage.debut) * PX_PAR_MINUTE,
+                        height: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE,
                         minHeight: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE,
                         ['--couleur' as string]: c.couleur,
                       }}

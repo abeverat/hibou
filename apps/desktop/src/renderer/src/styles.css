@@ -272,3 +272,15 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .memo-appareil { display: flex; flex-direction: column; gap: 0.7rem; margin-top: 1rem; }
 .memo-appareil h2 { margin: 0; font-size: 1.1rem; }
 .memo-appareil p { margin: 0; color: var(--discret); }
+
+/* Grille compacte (la journée tient dans la fenêtre) */
+.cal-grille.compact .cal-cours { padding: 0.15rem 0.4rem; font-size: 0.8rem; line-height: 1.2; }
+.cal-grille.compact .cal-cours-info + .cal-cours-info { display: none; }
+.cal-grille.compact .cal-consigne { -webkit-line-clamp: 1; }
+.cal-grille.compact .cal-devoir { margin-top: 0.05rem; }
+.cal-cours:hover { height: auto !important; }
+.cal-grille.compact .cal-cours:hover { box-shadow: 0 6px 18px rgb(0 0 0 / 0.45); }
+.contenu:has(.calendrier) { padding-bottom: 0; }
+.calendrier .cal-barre { margin-bottom: 0.5rem; }
+.cal-grille.compact .cal-cours:has(.cal-devoir) .cal-cours-info { display: none; }
+.cal-grille.compact .cal-cours:hover .cal-cours-info { display: block; }
