@@ -1,10 +1,8 @@
 # Fabrication des installeurs : npm run dist (à la racine).
-# macOS : certificat auto-signé stable (scripts/signer-mac.cjs), sans compte Apple Developer.
-# Windows : non signé.
+# Pas encore de certificat : macOS en signature « ad hoc », Windows non signé.
 appId: io.github.abeverat.hibou
 productName: Hibou
 copyright: Copyright © 2026 abeverat — MIT
-afterSign: ../../scripts/signer-mac.cjs
 directories:
   output: release
   buildResources: build
@@ -24,7 +22,7 @@ mac:
     - target: dmg
       arch: [arm64, x64]
   category: public.app-category.education
-  identity: null # signature faite par le hook afterSign ci-dessous
+  identity: '-' # signature ad hoc (indispensable sur Apple Silicon), sans compte Apple Developer
   hardenedRuntime: false
   notarize: false
 dmg:
