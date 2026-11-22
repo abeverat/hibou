@@ -4,6 +4,8 @@ Client alternatif pour EcoleDirecte : emploi du temps, devoirs, contrôles et no
 Application de bureau (macOS, Windows), puis mobile (iPhone, Android).
 **Non affilié à EcoleDirecte.** L'API utilisée n'est pas officielle et peut changer.
 
+> ⚠️ **Projet expérimental.** Pas encore d'installeur signé : se lance depuis les sources (voir ci-dessous).
+
 ## Lancer
 
 ```sh
