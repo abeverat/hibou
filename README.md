@@ -98,6 +98,11 @@ et les codes de réponse d'EcoleDirecte (jamais d'identifiant, de token ni de do
 npm run dist        # installeur pour la plateforme courante, dans apps/desktop/release/
 ```
 
+Signature macOS : sans compte Apple Developer, les versions publiées sont signées avec un certificat
+auto-signé stable (voir `scripts/signer-mac.cjs`), pour que le trousseau reconnaisse Hibou d'une version à
+l'autre. Pour signer localement avec ce certificat : variables `HIBOU_MAC_P12_FILE` et
+`HIBOU_MAC_P12_PASSWORD_FILE`. Sans elles, l'appli est signée « ad hoc ».
+
 Pour publier une version : mettre à jour `version` dans `apps/desktop/package.json`, puis
 `git tag vX.Y.Z && git push origin vX.Y.Z`. GitHub Actions fabrique les .dmg (macOS arm64 et x64) et le .exe (Windows)
 et les publie ; les liens de téléchargement ci-dessus pointent toujours vers la dernière version.

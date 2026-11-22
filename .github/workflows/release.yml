@@ -23,7 +23,10 @@ jobs:
       - run: npm test
       - run: npm run dist
         env:
-          CSC_IDENTITY_AUTO_DISCOVERY: 'false' # pas de certificat pour l'instant
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false' # pas de certificat Apple
+          # Certificat auto-signé stable de Hibou (voir scripts/signer-mac.cjs)
+          HIBOU_MAC_P12: ${{ secrets.HIBOU_MAC_P12 }}
+          HIBOU_MAC_P12_PASSWORD: ${{ secrets.HIBOU_MAC_P12_PASSWORD }}
       - uses: actions/upload-artifact@v4
         with:
           name: installeur-${{ matrix.os }}

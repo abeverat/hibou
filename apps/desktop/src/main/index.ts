@@ -6,6 +6,14 @@ import { libellesSysteme } from './langue';
 import { appareil } from './appareil';
 import { coffre, nomBiometrie, verifierBiometrie, type Identifiants } from './biometrie';
 
+// En développement (npm run dev), Hibou se présente comme « Hibou Dev » : trousseau
+// (« Hibou Dev Safe Storage ») et dossier de données séparés de l'appli installée, sinon
+// macOS redemanderait l'accès au trousseau en passant de l'une à l'autre.
+if (!app.isPackaged) {
+  app.setName('Hibou Dev');
+  app.setPath('userData', join(app.getPath('appData'), 'Hibou Dev'));
+}
+
 const DEMO = process.env.DEMO === '1';
 /** HIBOU_DEBUG=1 : journalise les routes et codes EcoleDirecte (jamais d'identifiants ni de données). */
 const DEBUG = process.env.HIBOU_DEBUG === '1';
