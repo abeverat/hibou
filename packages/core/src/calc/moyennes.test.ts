@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { bilanPeriode, moyenneGenerale, moyenneMatiere, noteSur20 } from './moyennes';
+import { bilanPeriode, evolutionMoyennes, moyenneGenerale, moyenneMatiere, noteSur20 } from './moyennes';
 import { parseNombre } from '../ed/parsers';
 import type { Note, Periode, Releve } from '../types';
 
@@ -94,5 +94,26 @@ describe('bilanPeriode', () => {
     const b = bilanPeriode(releve(periode(14, null)), 'A001', [note('20', '20', '2')])!;
     // (12 + 16 + 20×2) / 4 = 17
     expect(b.matieres.find((m) => m.code === 'MATHS')!.affichee).toBe(17);
+  });
+});
+
+describe('evolutionMoyennes', () => {
+  it('cumule la moyenne de l’élève et celle de la classe note après note', () => {
+    const notes = [
+      note('12', '20', '1', { date: '2025-01-01', moyenneClasse: 10 }),
+      note('8', '10', '1', { date: '2025-01-05', moyenneClasse: 6 }),
+      note('Abs', '20', '1', { date: '2025-01-08', moyenneClasse: 11 }),
+      note('15', '20', '1', { date: '2025-01-09', codeMatiere: 'SVT', moyenneClasse: null }),
+    ];
+    const coefs = new Map([['MATHS', 3], ['SVT', 1]]);
+    const pts = evolutionMoyennes(notes, coefs);
+    expect(pts.map((p) => p.eleve)).toEqual([12, 14, 14, (14 * 3 + 15) / 4]);
+    // classe maths : 10 puis (10 + 12)/2 = 11, puis (10 + 12 + 11)/3 = 11 ; SVT sans moyenne de classe
+    expect(pts.map((p) => p.classe)).toEqual([10, 11, 11, 11]);
+    expect(pts[2]!.noteSur20).toBeNull();
+  });
+  it('filtre sur une matière', () => {
+    const notes = [note('12'), note('15', '20', '1', { codeMatiere: 'SVT' })];
+    expect(evolutionMoyennes(notes, new Map(), 'SVT').map((p) => p.eleve)).toEqual([15]);
   });
 });

@@ -5,14 +5,12 @@ import { Connexion } from './ecrans/Connexion';
 import { Aujourdhui } from './ecrans/Aujourdhui';
 import { EmploiDuTemps } from './ecrans/EmploiDuTemps';
 import { CalendrierDevoirs } from './ecrans/CalendrierDevoirs';
-import { Controles } from './ecrans/Controles';
 import { Notes } from './ecrans/Notes';
 
 const ONGLETS = [
   { id: 'aujourdhui', nom: "Aujourd'hui" },
   { id: 'edt', nom: 'Emploi du temps' },
   { id: 'devoirs', nom: 'Devoirs & contrôles' },
-  { id: 'controles', nom: 'Calendrier des contrôles' },
   { id: 'notes', nom: 'Notes' },
 ] as const;
 type Onglet = (typeof ONGLETS)[number]['id'];
@@ -103,8 +101,7 @@ export function App() {
       <main className="contenu">
         {onglet === 'aujourdhui' && <Aujourdhui key={cle} onVoir={setOnglet} />}
         {onglet === 'edt' && <EmploiDuTemps key={cle} />}
-        {onglet === 'devoirs' && <CalendrierDevoirs key={cle} />}
-        {onglet === 'controles' && <Controles key={cle} eleve={eleve} />}
+        {onglet === 'devoirs' && <CalendrierDevoirs key={cle} eleve={eleve} />}
         {onglet === 'notes' && <Notes key={cle} />}
       </main>
     </div>

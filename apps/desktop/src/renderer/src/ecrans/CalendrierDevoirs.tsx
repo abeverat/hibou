@@ -3,7 +3,8 @@
  * le jour de l'échéance (emploi du temps EcoleDirecte). Les cours sans rien à faire sont grisés.
  */
 import { useEffect, useMemo, useState } from 'react';
-import { ajouterJours, dateLocale, jourSemaine, placerDevoirs, type Cours, type Devoir } from '@hibou/core';
+import { ajouterJours, dateLocale, jourSemaine, placerDevoirs, type Cours, type Devoir, type Eleve } from '@hibou/core';
+import { exporterControles } from '../exportIcs';
 import { api, lireErreur } from '../api';
 import { texteBrut } from '../html';
 import { heure } from '../format';
@@ -15,7 +16,7 @@ interface Donnees {
   devoirs: Devoir[];
 }
 
-export function CalendrierDevoirs() {
+export function CalendrierDevoirs({ eleve }: { eleve: Eleve | undefined }) {
   const aujourdHui = dateLocale();
   const demain = ajouterJours(aujourdHui, 1);
   const { lundi, jourMobile, setJourMobile, decaler, revenir } = useSemaine(aujourdHui, ajouterJours, jourSemaine);
@@ -24,6 +25,21 @@ export function CalendrierDevoirs() {
   const [ouvert, setOuvert] = useState<Devoir | null>(null);
   /** Début de la consigne de chaque devoir, chargé après l'affichage de la semaine. */
   const [consignes, setConsignes] = useState<Map<number, string>>(new Map());
+  const [exportEnCours, setExportEnCours] = useState(false);
+  const [messageExport, setMessageExport] = useState('');
+
+  async function exporter() {
+    setExportEnCours(true);
+    setMessageExport('');
+    try {
+      const n = await exporterControles(eleve);
+      setMessageExport(n === 0 ? 'Aucun contrôle à venir à exporter.' : '');
+    } catch (e) {
+      setErreur(lireErreur(e).message);
+    } finally {
+      setExportEnCours(false);
+    }
+  }
 
   useEffect(() => {
     let annule = false;
@@ -93,11 +109,20 @@ export function CalendrierDevoirs() {
             <>
               <span className="badge badge-rouge">{nbControles} contrôle{nbControles > 1 ? 's' : ''}</span>
               <span className="badge">{nbDevoirs} devoir{nbDevoirs > 1 ? 's' : ''}</span>
+              <button
+                className="bouton-secondaire bouton-export"
+                onClick={exporter}
+                disabled={exportEnCours}
+                title="Tous les contrôles à venir, pour Google Agenda, Outlook ou le calendrier du téléphone"
+              >
+                📅 Exporter les contrôles (.ics)
+              </button>
             </>
           )
         }
       />
       {erreur && <p className="erreur" role="alert">{erreur}</p>}
+      {messageExport && <p className="discret">{messageExport}</p>}
       {!donnees && !erreur && <p className="discret">Chargement…</p>}
       {donnees && (
         <GrilleSemaine

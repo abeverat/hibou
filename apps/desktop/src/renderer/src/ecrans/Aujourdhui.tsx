@@ -5,7 +5,7 @@ import { api } from '../api';
 import { dansNJours, fmt, heure, nombre, useCharge } from '../format';
 import { DetailDevoir, LigneDevoir, useBasculerDevoir } from '../composants/Devoirs';
 
-export function Aujourdhui({ onVoir }: { onVoir: (onglet: 'devoirs' | 'controles' | 'notes' | 'edt') => void }) {
+export function Aujourdhui({ onVoir }: { onVoir: (onglet: 'devoirs' | 'notes' | 'edt') => void }) {
   const aujourdHui = dateLocale();
   const maintenant = `${aujourdHui}T${new Date().toTimeString().slice(0, 5)}`;
   const [ouvert, setOuvert] = useState<Devoir | null>(null);
@@ -100,7 +100,7 @@ export function Aujourdhui({ onVoir }: { onVoir: (onglet: 'devoirs' | 'controles
             <p className="vide-grise">Aucun contrôle annoncé.</p>
           )}
           {controles.length > 1 && (
-            <button className="lien discret" onClick={() => onVoir('controles')}>
+            <button className="lien discret" onClick={() => onVoir('devoirs')}>
               {controles.length - 1} autre{controles.length > 2 ? 's' : ''} contrôle{controles.length > 2 ? 's' : ''} à venir →
             </button>
           )}

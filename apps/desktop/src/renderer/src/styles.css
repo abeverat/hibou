@@ -181,8 +181,8 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .cal-devoir.fait .cal-consigne { text-decoration: line-through; opacity: 0.5; }
 
 /* ---------- Commun ---------- */
-:root { --serie-moyenne: #3b7ddd; --serie-notes: #b7791f; --bleu: #3b7ddd; }
-@media (prefers-color-scheme: dark) { :root { --serie-moyenne: #4a8ae6; --serie-notes: #b8812e; --bleu: #4a8ae6; } }
+:root { --serie-moyenne: #3b7ddd; --serie-notes: #b7791f; --serie-classe: #2f9e8f; --bleu: #3b7ddd; }
+@media (prefers-color-scheme: dark) { :root { --serie-moyenne: #4a8ae6; --serie-notes: #b8812e; --serie-classe: #3aa898; --bleu: #4a8ae6; } }
 .badge-bleu { background: var(--bleu); color: white; }
 .premiere-majuscule::first-letter { text-transform: uppercase; }
 .vide-grise { color: var(--discret); opacity: 0.7; font-style: italic; margin: 0.3rem 0; }
@@ -224,29 +224,8 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .cal-maintenant { position: absolute; left: 0; right: 0; border-top: 2px solid var(--rouge); z-index: 3; }
 .cal-maintenant::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--rouge); }
 
-/* ---------- Calendrier des contrôles ---------- */
-.prochain-controle { margin: 0 0 0.8rem; }
-.mois { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin-bottom: 0.6rem; }
-.mois-entete { text-align: center; color: var(--discret); font-size: 0.8rem; padding-bottom: 0.2rem; }
-.mois-case {
-  min-height: 92px; background: var(--surface); border: 1px solid var(--bord); border-radius: 8px; padding: 0.3rem;
-  display: flex; flex-direction: column; gap: 3px;
-}
-.mois-case.hors-mois { opacity: 0.35; }
-.mois-case.passe:not(.avec) { opacity: 0.55; }
-.mois-case.aujourdhui { border-color: var(--bleu); box-shadow: inset 0 0 0 1px var(--bleu); }
-.mois-case.aujourdhui .mois-num { color: var(--bleu); font-weight: 700; }
-.mois-num { font-size: 0.8rem; color: var(--discret); }
-.puce-controle {
-  background: var(--rouge); color: white; font-size: 0.78rem; padding: 0.15rem 0.35rem; border-radius: 5px; text-align: left;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.puce-heure { opacity: 0.85; font-variant-numeric: tabular-nums; }
-@media (max-width: 760px) {
-  .mois-case { min-height: 58px; padding: 0.15rem; }
-  .puce-controle { font-size: 0.65rem; padding: 0.1rem 0.2rem; }
-  .puce-heure { display: none; }
-}
+.bouton-export { padding: 0.3em 0.8em; font-size: 0.85rem; }
+.cal-resume { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
 
 /* ---------- Notes ---------- */
 .onglets-periodes { display: flex; gap: 0.3rem; flex-wrap: wrap; margin-bottom: 0.8rem; }

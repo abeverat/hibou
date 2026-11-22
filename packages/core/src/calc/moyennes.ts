@@ -122,3 +122,47 @@ export function bilanPeriode(releve: Releve, codePeriode: string, notesFictives:
     },
   };
 }
+
+export interface PointEvolution {
+  date: string;
+  note: Note;
+  /** Note ramenée sur 20 (null : absence, non significative…). */
+  noteSur20: number | null;
+  /** Moyenne de l'élève avec toutes les notes jusqu'à celle-ci incluse. */
+  eleve: number | null;
+  /** Même calcul avec la moyenne de classe de chaque devoir (null si non publiée). */
+  classe: number | null;
+}
+
+/**
+ * Évolution des moyennes, note après note : générale (pondérée par les coefficients de matière)
+ * ou d'une seule matière si `codeMatiere` est donné.
+ */
+export function evolutionMoyennes(
+  notes: Note[],
+  coefMatiere: Map<string, number>,
+  codeMatiere?: string,
+): PointEvolution[] {
+  const triees = notes
+    .filter((n) => !codeMatiere || n.codeMatiere === codeMatiere)
+    .sort((a, b) => a.date.localeCompare(b.date) || a.id - b.id);
+  const eleve = new Map<string, Note[]>();
+  const classe = new Map<string, Note[]>();
+  const agreger = (parMatiere: Map<string, Note[]>) =>
+    moyenneGenerale([...parMatiere.entries()].map(([c, l]) => ({ moyenne: moyenneMatiere(l), coef: coefMatiere.get(c) ?? 1 })));
+
+  return triees.map((n) => {
+    eleve.set(n.codeMatiere, [...(eleve.get(n.codeMatiere) ?? []), n]);
+    if (n.moyenneClasse != null && !n.nonSignificatif) {
+      // La moyenne de classe du devoir remplace la note : même barème, même coefficient.
+      classe.set(n.codeMatiere, [...(classe.get(n.codeMatiere) ?? []), { ...n, valeur: n.moyenneClasse }]);
+    }
+    return {
+      date: n.date,
+      note: n,
+      noteSur20: noteSur20(n),
+      eleve: agreger(eleve),
+      classe: classe.size ? agreger(classe) : null,
+    };
+  });
+}

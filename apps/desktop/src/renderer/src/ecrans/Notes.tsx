@@ -7,8 +7,7 @@ import {
   CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts';
 import {
-  bilanPeriode, dateLocale, moyenneGenerale, moyenneMatiere, notesDePeriode, noteSur20,
-  type Note, type Releve,
+  bilanPeriode, dateLocale, evolutionMoyennes, notesDePeriode, type Note, type Releve,
 } from '@hibou/core';
 import { api } from '../api';
 import { fmt, moy, nombre, useCharge } from '../format';
@@ -218,43 +217,39 @@ function PuceNote({ n, coef }: { n: Note; coef: boolean }) {
   );
 }
 
-/** Évolution : chaque note (sur 20) et la moyenne cumulée à cette date. */
+const LIBELLES: Record<string, string> = {
+  note: 'Notes (ramenées sur 20)',
+  eleve: "Moyenne de l'élève",
+  classe: 'Moyenne de la classe',
+};
+
+/** Évolution : chaque note (sur 20), la moyenne de l'élève et celle de la classe à cette date. */
 function Graphique({ releve, code, fictives }: { releve: Releve; code: string; fictives: Note[] }) {
   const periode = releve.periodes.find((p) => p.code === code)!;
   const [filtre, setFiltre] = useState('');
-  const toutes = [...notesDePeriode(releve, periode), ...fictives].sort((a, b) => a.date.localeCompare(b.date));
+  const toutes = [...notesDePeriode(releve, periode), ...fictives];
   const matieres = [...new Map(toutes.map((n) => [n.codeMatiere, n.matiere])).entries()];
-  const notes = filtre ? toutes.filter((n) => n.codeMatiere === filtre) : toutes;
   const coefMatiere = new Map(periode.matieres.map((m) => [m.code, m.coef]));
+  const arr = (x: number | null) => (x == null ? null : Math.round(x * 100) / 100);
 
-  const points = notes
-    .map((n, i) => {
-      const jusquIci = notes.slice(0, i + 1);
-      let cumul: number | null;
-      if (filtre) cumul = moyenneMatiere(jusquIci);
-      else {
-        const parMatiere = new Map<string, Note[]>();
-        for (const x of jusquIci) parMatiere.set(x.codeMatiere, [...(parMatiere.get(x.codeMatiere) ?? []), x]);
-        cumul = moyenneGenerale(
-          [...parMatiere.entries()].map(([c, l]) => ({ moyenne: moyenneMatiere(l), coef: coefMatiere.get(c) ?? 1 })),
-        );
-      }
-      const sur20 = noteSur20(n);
-      return {
-        date: n.date,
-        note: sur20 == null ? null : Math.round(sur20 * 100) / 100,
-        moyenne: cumul == null ? null : Math.round(cumul * 100) / 100,
-        libelle: `${n.matiere} · ${n.devoir}${n.id < 0 ? ' (fictive)' : ''}`,
-      };
-    })
-    .filter((p) => p.note != null);
+  const points = evolutionMoyennes(toutes, coefMatiere, filtre || undefined)
+    .filter((p) => p.noteSur20 != null)
+    .map((p) => ({
+      date: p.date,
+      note: arr(p.noteSur20),
+      eleve: arr(p.eleve),
+      classe: arr(p.classe),
+      libelle: `${p.note.matiere} · ${p.note.devoir}${p.note.id < 0 ? ' (fictive)' : ''}`,
+    }));
+  const avecClasse = releve.affichage.moyenneClasse && points.some((p) => p.classe != null);
+  const portee = filtre ? ' en ' + (matieres.find(([c]) => c === filtre)?.[1] ?? '') : ' générale';
 
   return (
     <>
       <div className="carte-titre">
         <h2>Évolution</h2>
         <select value={filtre} onChange={(e) => setFiltre(e.target.value)} aria-label="Matière du graphique">
-          <option value="">Toutes les matières</option>
+          <option value="">Moyenne générale</option>
           {matieres.map(([c, nom]) => (
             <option key={c} value={c}>{nom}</option>
           ))}
@@ -264,9 +259,9 @@ function Graphique({ releve, code, fictives }: { releve: Releve; code: string; f
         <p className="vide-grise">Pas de note chiffrée sur cette période.</p>
       ) : (
         <div className="graphique-zone">
-          <ResponsiveContainer width="100%" height={230}>
+          <ResponsiveContainer width="100%" height={240}>
             <LineChart data={points} margin={{ top: 8, right: 12, bottom: 0, left: -18 }}>
-              <CartesianGrid stroke="var(--bord)" strokeDasharray="0" vertical={false} />
+              <CartesianGrid stroke="var(--bord)" vertical={false} />
               <XAxis
                 dataKey="date"
                 tickFormatter={(d: string) => fmt(d, { day: 'numeric', month: 'short' })}
@@ -279,13 +274,14 @@ function Graphique({ releve, code, fictives }: { releve: Releve; code: string; f
               <Tooltip
                 contentStyle={{ background: 'var(--surface)', border: '1px solid var(--bord)', borderRadius: 8, color: 'var(--texte)' }}
                 labelFormatter={(d, p) => `${fmt(String(d), { day: 'numeric', month: 'long' })} · ${p?.[0]?.payload?.libelle ?? ''}`}
-                formatter={(v, nom) => [moy(Number(v)), nom === 'note' ? 'Note (sur 20)' : filtre ? 'Moyenne de la matière' : 'Moyenne générale']}
+                formatter={(v, nom) => [moy(Number(v)), nom === 'note' ? 'Note (sur 20)' : LIBELLES[String(nom)] + (nom === 'note' ? '' : portee)]}
               />
-              <Legend
-                formatter={(v) => <span style={{ color: 'var(--texte)' }}>{v === 'note' ? 'Notes (ramenées sur 20)' : filtre ? 'Moyenne de la matière' : 'Moyenne générale'}</span>}
-              />
+              <Legend formatter={(v) => <span style={{ color: 'var(--texte)' }}>{LIBELLES[String(v)]}</span>} />
               <Line dataKey="note" stroke="var(--serie-notes)" strokeWidth={0} dot={{ r: 4, fill: 'var(--serie-notes)', stroke: 'var(--surface)', strokeWidth: 2 }} activeDot={{ r: 6 }} isAnimationActive={false} />
-              <Line dataKey="moyenne" stroke="var(--serie-moyenne)" strokeWidth={2} dot={false} type="monotone" isAnimationActive={false} />
+              <Line dataKey="eleve" stroke="var(--serie-moyenne)" strokeWidth={2} dot={false} type="monotone" isAnimationActive={false} />
+              {avecClasse && (
+                <Line dataKey="classe" stroke="var(--serie-classe)" strokeWidth={2} strokeDasharray="5 4" dot={false} type="monotone" connectNulls isAnimationActive={false} />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>
