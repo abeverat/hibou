@@ -1,6 +1,6 @@
 /** Accès typé aux données EcoleDirecte : routes + conversion vers le modèle interne. */
 import type { Compte, Cours, DateISO, Devoir, DevoirDetail, Releve } from '../types';
-import type { EdBackend, EtapeConnexion } from './backend';
+import type { EdBackend, EtapeConnexion, JetonConnexion } from './backend';
 import type { RawCahierDeTexte, RawCahierDeTexteJour, RawCours, RawNotes } from './raw';
 import {
   parseCompte, parseCours, parseDevoirs, parseDevoirsJour, parseQcm, parseReleve,
@@ -24,6 +24,14 @@ export class EdClient {
 
   async connexion(identifiant: string, motdepasse: string): Promise<ResultatConnexion> {
     return versResultat(await this.backend.connexion(identifiant, motdepasse));
+  }
+
+  async reprendre(jeton: JetonConnexion): Promise<ResultatConnexion> {
+    return versResultat(await this.backend.reprendre(jeton));
+  }
+
+  jetonActuel(): JetonConnexion | null {
+    return this.backend.jetonActuel();
   }
 
   async repondreQcm(choix: string): Promise<ResultatConnexion> {

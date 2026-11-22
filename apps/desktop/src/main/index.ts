@@ -1,8 +1,9 @@
 import { join } from 'node:path';
 import { app, BrowserWindow, ipcMain, Menu, powerMonitor, shell } from 'electron';
-import { DemoBackend, ErreurEd, HibouService, METHODES_API, ReelBackend, type Http } from '@hibou/core';
+import { DemoBackend, ErreurEd, HibouService, METHODES_API, ReelBackend, type Http, type ResultatConnexion } from '@hibou/core';
 import { CANAL_IPC, CANAL_REGLAGES, CANAL_VERROU, METHODES_BUREAU, type EtatBiometrie, type EtatReglages, type ReponseIpc } from '../preload/ipc';
 import { libellesSysteme } from './langue';
+import { sessionEnregistree } from './session';
 import { appareil } from './appareil';
 import { BIOMETRIE_ACTIVEE, coffre, nomBiometrie, verifierBiometrie, type Identifiants } from './biometrie';
 
@@ -37,6 +38,8 @@ let identifiantCourant = '';
 /** Identifiants de la dernière connexion par mot de passe, gardés en mémoire le temps de
  *  proposer la biométrie (effacés dès que l'utilisateur a répondu). */
 let identifiantsEnAttente: Identifiants | null = null;
+/** « Rester connecté » coché pour la session en cours : le jeton est enregistré (et renouvelé). */
+let garderConnexion = false;
 /** Appli verrouillée (veille, écran verrouillé) : seules quelques méthodes restent permises. */
 let verrouille = false;
 const PERMIS_VERROUILLE = new Set(['etat', 'estVerrouille', 'deverrouillerSession', 'deconnexion', 'biometrie']);
@@ -47,6 +50,8 @@ const reel = DEMO
       http: httpNode,
       journal: DEBUG ? (m) => console.log(`[ecoledirecte] ${m}`) : undefined,
       onDoubleAuth: (fa) => (faEnAttente = { identifiant: identifiantCourant, fa }),
+      // Jeton renouvelé par EcoleDirecte (reconnexion silencieuse) : on garde le plus récent.
+      onJeton: (jeton) => garderConnexion && sessionEnregistree.enregistrer(DEMO, jeton),
     });
 
 // Le service (et donc le token EcoleDirecte) vit uniquement dans le processus principal :
@@ -61,13 +66,55 @@ async function connecter(identifiant: string, motdepasse: string) {
   return service.connexion(identifiant, motdepasse);
 }
 
+/** Après une connexion réussie : enregistre le jeton si « Rester connecté » est coché. */
+function memoriserSession(r: ResultatConnexion) {
+  if (r.etat !== 'connecte') return;
+  const jeton = service.jetonActuel();
+  if (garderConnexion && jeton) sessionEnregistree.enregistrer(DEMO, jeton);
+  else sessionEnregistree.effacer(DEMO);
+}
+
 const bureau = {
-  async connexion(identifiant: string, motdepasse: string) {
-    identifiantsEnAttente = { identifiant, motdepasse };
+  async connexion(identifiant: string, motdepasse: string, garder?: unknown) {
+    garderConnexion = garder === true && sessionEnregistree.disponible();
+    if (BIOMETRIE_ACTIVEE) identifiantsEnAttente = { identifiant, motdepasse };
     try {
-      return await connecter(identifiant, motdepasse);
+      const r = await connecter(identifiant, motdepasse);
+      memoriserSession(r);
+      return r;
     } catch (e) {
       identifiantsEnAttente = null;
+      throw e;
+    }
+  },
+  async repondreQcm(choix: string) {
+    const r = await service.repondreQcm(choix);
+    memoriserSession(r);
+    return r;
+  },
+  /** Au lancement : reconnexion avec le jeton enregistré, ou null s'il n'y en a pas. */
+  async reprendreSession(): Promise<ResultatConnexion | null> {
+    if (!sessionEnregistree.existe(DEMO)) return null;
+    const jeton = sessionEnregistree.lire(DEMO);
+    if (!jeton) {
+      sessionEnregistree.effacer(DEMO);
+      return null;
+    }
+    identifiantCourant = jeton.identifiant;
+    faEnAttente = null;
+    verrouille = false;
+    reel?.definirDoubleAuth(DEMO ? null : appareil.lire(jeton.identifiant));
+    try {
+      garderConnexion = true;
+      const r = await service.reprendre(jeton);
+      memoriserSession(r);
+      return r;
+    } catch (e) {
+      // Jeton refusé : on l'efface ; erreur réseau : on le garde pour la prochaine fois.
+      if (e instanceof ErreurEd && e.type !== 'indisponible') {
+        garderConnexion = false;
+        sessionEnregistree.effacer(DEMO);
+      }
       throw e;
     }
   },
@@ -149,6 +196,8 @@ const bureau = {
     return !DEMO && appareil.estMemorise();
   },
   async deconnexion() {
+    garderConnexion = false;
+    sessionEnregistree.effacer(DEMO);
     faEnAttente = null;
     identifiantsEnAttente = null;
     verrouille = false;

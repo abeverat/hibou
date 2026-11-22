@@ -303,3 +303,7 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .succes { color: #2f8a4e; margin: 0; }
 @media (prefers-color-scheme: dark) { .succes { color: #5cc07f; } }
 .bouton-icone { display: inline-flex; align-items: center; justify-content: center; padding-left: 0.6rem; padding-right: 0.6rem; }
+.carte-connexion label.case { flex-direction: row; align-items: flex-start; gap: 0.55rem; cursor: pointer; }
+.carte-connexion label.case input { margin-top: 0.2rem; width: auto; }
+.carte-connexion label.case > span { display: flex; flex-direction: column; gap: 0.2rem; }
+.reprise { margin: 1.2rem 0 0.4rem; text-align: center; }

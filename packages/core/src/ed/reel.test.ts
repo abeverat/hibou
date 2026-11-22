@@ -21,7 +21,7 @@ const COMPTE = {
 };
 
 /** Faux serveur EcoleDirecte. */
-function fauxServeur(options: { qcm?: boolean; expireApres?: number } = {}) {
+function fauxServeur(options: { qcm?: boolean; expireApres?: number; jeton?: boolean } = {}) {
   const appels: RequeteHttp[] = [];
   let n = 0;
   let qcmResolu = false;
@@ -29,17 +29,30 @@ function fauxServeur(options: { qcm?: boolean; expireApres?: number } = {}) {
   const rep = (json: object, enTetes: Record<string, string> = {}, cookies: string[] = []): ReponseHttp => ({
     statut: 200, enTetes, cookies, texte: JSON.stringify(json),
   });
+  const jetonsValides = new Set<string>();
+  const avecJeton = () => {
+    const at = `AT${jetonsValides.size + 1}`;
+    jetonsValides.add(at);
+    return { accounts: [{ ...COMPTE.accounts[0]!, accessToken: at }] };
+  };
   const http = async (r: RequeteHttp): Promise<ReponseHttp> => {
     appels.push(r);
     const token = `T${++n}`;
     if (r.methode === 'GET' && r.url.includes('login.awp?gtk=1')) return rep({ code: 200 }, {}, [`GTK=gtk${n}; Path=/; Secure`]);
     if (r.url.includes('/login.awp')) {
       if (!r.enTetes['x-gtk'] || !r.enTetes.cookie?.includes('GTK=')) return rep({ code: 505, message: 'gtk' });
+      // Reconnexion « se souvenir de moi » : jeton AT<n> valide s'il a été émis, mot de passe vide.
+      if (r.corps!.includes('"isReLogin": true')) {
+        const at = /"accesstoken": "([^"]+)"/.exec(r.corps!)?.[1];
+        const ok = r.corps!.includes('"motdepasse":""') && r.corps!.includes('"uuid": "U-1"') && at && jetonsValides.has(at);
+        if (!ok) return rep({ code: 505, message: 'jeton' });
+        return rep({ code: 200, data: avecJeton() }, { 'x-token': token });
+      }
       if (!r.corps!.includes('"motdepasse":"m%C3%B4t%26de"')) return rep({ code: 505, message: 'mdp' });
       if (options.qcm && !(qcmResolu && r.corps!.includes('"fa": [{"cn": "CN", "cv": "CV"}]'))) {
         return rep({ code: 250, token: '', data: { accounts: [] } }, { 'x-token': token, '2fa-token': 'F2A' });
       }
-      return rep({ code: 200, data: COMPTE }, { 'x-token': token });
+      return rep({ code: 200, data: options.jeton ? avecJeton() : COMPTE }, { 'x-token': token });
     }
     if (r.url.includes('doubleauth.awp?verbe=get')) {
       if (r.enTetes['2fa-token'] !== 'F2A') return rep({ code: 520 });
@@ -127,5 +140,51 @@ describe('ReelBackend', () => {
   it('réseau coupé → erreur indisponible', async () => {
     const b = new ReelBackend({ http: async () => { throw new Error('ECONNREFUSED'); } });
     await expect(b.connexion('a', 'b')).rejects.toMatchObject({ type: 'indisponible' });
+  });
+
+  describe('« se souvenir de moi » (jeton)', () => {
+    const corpsLogin = (a: RequeteHttp[]) => a.filter((x) => x.methode === 'POST' && x.url.includes('/login.awp')).map((x) => x.corps!);
+
+    it('connexion par mot de passe : demande un jeton, puis oublie le mot de passe', async () => {
+      const { http, appels } = fauxServeur({ jeton: true, expireApres: 1 });
+      const recus: string[] = [];
+      const b = new ReelBackend({ http, uuid: () => 'U-1', onJeton: (j) => recus.push(j.accessToken) });
+      const service = new HibouService(b);
+      await service.connexion('moi', 'môt&de');
+      expect(corpsLogin(appels)[0]).toContain('"sesouvenirdemoi": true');
+      expect(corpsLogin(appels)[0]).toContain('"uuid": "U-1"');
+      expect(service.jetonActuel()).toEqual({ identifiant: 'moi', uuid: 'U-1', typeCompte: '1', accessToken: 'AT1' });
+
+      // Token expiré : la reconnexion silencieuse se fait avec le jeton, sans mot de passe.
+      await expect(service.emploiDuTemps('2026-11-23', '2026-11-28')).resolves.toEqual([]);
+      const relogin = corpsLogin(appels)[1]!;
+      expect(relogin).toContain('"isReLogin": true');
+      expect(relogin).toContain('"motdepasse":""');
+      expect(relogin).not.toContain('m%C3%B4t');
+      expect(recus).toEqual(['AT1', 'AT2']);
+    });
+
+    it('reprise avec un jeton enregistré, sans mot de passe', async () => {
+      const { http, appels } = fauxServeur({ jeton: true });
+      const premier = new HibouService(new ReelBackend({ http, uuid: () => 'U-1' }));
+      await premier.connexion('moi', 'môt&de');
+      const jeton = premier.jetonActuel()!;
+
+      const service = new HibouService(new ReelBackend({ http }));
+      const r = await service.reprendre(jeton);
+      expect(r.etat).toBe('connecte');
+      expect(corpsLogin(appels).at(-1)).toContain('"accesstoken": "AT1"');
+      expect(corpsLogin(appels).at(-1)).toContain('"typeCompte": "1"');
+      expect(service.jetonActuel()?.accessToken).toBe('AT2');
+      await expect(service.devoirs()).resolves.toBeDefined();
+    });
+
+    it('jeton refusé → erreur session (retour à l’écran de connexion)', async () => {
+      const { http } = fauxServeur({ jeton: true });
+      const service = new HibouService(new ReelBackend({ http }));
+      await expect(service.reprendre({ identifiant: 'moi', uuid: 'U-1', typeCompte: '1', accessToken: 'périmé' }))
+        .rejects.toMatchObject({ type: 'session' });
+      expect(service.jetonActuel()).toBeNull();
+    });
   });
 });

@@ -68,3 +68,19 @@ API non officielle. Sources vérifiées le 2026-11-22 :
 | Notes | `eleves/{id}/notes.awp?verbe=get` | `{"anneeScolaire":""}` |
 
 Les formats des réponses sont reproduits dans `packages/core/src/ed/fixtures/`.
+
+## Connexion « se souvenir de moi » (jeton, type mobile)
+
+Source : documentation communautaire de l'API (`ecoledirecte-api-docs`), « Authentification type mobile ».
+
+1. Connexion par mot de passe avec en plus `"sesouvenirdemoi": true` et un `uuid` (v4) généré par l'appli,
+   à garder avec le jeton. Soumise au QCM comme une connexion normale.
+2. La réponse contient `accessToken` dans l'objet compte (`data.accounts[0]`) — Hibou accepte aussi `access_token`.
+3. Reconnexion sans mot de passe : `POST login.awp` avec
+   `{"identifiant", "motdepasse": "", "isReLogin": true, "uuid", "typeCompte", "accesstoken"}` (+ `fa` si connus).
+   La réponse est celle d'un login normal, avec un nouveau token de session (et éventuellement un nouvel `accessToken`).
+
+Hibou : jeton enregistré seulement si « Rester connecté » est coché (chiffré, `session.bin`), effacé à la
+déconnexion ou s'il est refusé. Dès le jeton reçu, le mot de passe est effacé de la mémoire.
+Durée de validité du jeton : inconnue.
+

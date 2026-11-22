@@ -20,17 +20,33 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
   /** L'utilisateur préfère le formulaire au déverrouillage biométrique. */
   const [formulaire, setFormulaire] = useState(false);
   const tentativeAuto = useRef(false);
+  /** « Rester connecté sur cet ordinateur » : décoché par défaut (accord explicite). */
+  const [garder, setGarder] = useState(false);
+  /** Reconnexion automatique avec le jeton enregistré, au lancement. */
+  const [reprise, setReprise] = useState(true);
 
   useEffect(() => {
+    if (tentativeAuto.current) return;
+    tentativeAuto.current = true;
     void api.appareilMemorise().then(setMemorise);
-    void api.biometrie().then((b) => {
-      setBio(b);
-      // Une seule demande automatique à l'ouverture.
-      if (b.active && !tentativeAuto.current) {
-        tentativeAuto.current = true;
-        void traiter(api.deverrouiller(), { biometrique: true });
+    void (async () => {
+      try {
+        const r = await api.reprendreSession();
+        if (r) {
+          setReprise(false);
+          if (r.etat === 'connecte') return onConnecte();
+          setGarder(true);
+          setQcm(r);
+          return;
+        }
+      } catch (e) {
+        setErreur(lireErreur(e).message);
       }
-    });
+      setReprise(false);
+      const b = await api.biometrie();
+      setBio(b);
+      if (b.active) void traiter(api.deverrouiller(), { biometrique: true });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,7 +98,9 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
         </h1>
         <p className="discret">Client non officiel pour EcoleDirecte</p>
 
-        {proposition === 'appareil' ? (
+        {reprise ? (
+          <p className="discret reprise">Connexion à EcoleDirecte…</p>
+        ) : proposition === 'appareil' ? (
           <div className="memo-appareil">
             <h2>Mémoriser cet ordinateur ?</h2>
             <p>
@@ -158,7 +176,7 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
           <form
             onSubmit={(e: FormEvent) => {
               e.preventDefault();
-              void traiter(api.connexion(identifiant.trim(), motdepasse));
+              void traiter(api.connexion(identifiant.trim(), motdepasse, garder));
             }}
           >
             <label>
@@ -168,6 +186,16 @@ export function Connexion({ demo, onConnecte }: { demo: boolean; onConnecte: () 
             <label>
               Mot de passe
               <input type="password" autoComplete="current-password" value={motdepasse} onChange={(e) => setMotdepasse(e.target.value)} required />
+            </label>
+            <label className="case">
+              <input type="checkbox" checked={garder} onChange={(e) => setGarder(e.target.checked)} />
+              <span>
+                Rester connecté sur cet ordinateur
+                <span className="discret petit">
+                  Hibou garde un jeton de connexion fourni par EcoleDirecte (jamais votre mot de passe), chiffré par le
+                  trousseau du système. « Déconnexion » l'efface.
+                </span>
+              </span>
             </label>
             {erreur && <p className="erreur" role="alert">{erreur}</p>}
             <button type="submit" disabled={enCours}>

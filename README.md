@@ -126,6 +126,9 @@ et les publie ; les liens de téléchargement ci-dessus pointent toujours vers l
   (`identifiants.bin`), et Hibou ne le déchiffre qu'après la vérification biométrique. Désactivable dans les Réglages.
 - Hibou se verrouille à la mise en veille et au verrouillage de l'écran quand la biométrie est active.
 - Le token EcoleDirecte reste en mémoire dans le processus principal ; la fenêtre ne le voit pas.
+- « Rester connecté » (case à cocher, décochée par défaut) : Hibou garde le jeton de reconnexion fourni par
+  EcoleDirecte, jamais le mot de passe, chiffré par le trousseau du système (`session.bin`). « Déconnexion » l'efface.
+  Le mot de passe est effacé de la mémoire dès que le jeton est reçu.
 - Aucune donnée n'est envoyée ailleurs qu'à EcoleDirecte.
 - Après une question de sécurité réussie, Hibou propose de mémoriser l'ordinateur : seuls les codes
   `cn`/`cv` fournis par EcoleDirecte sont gardés, chiffrés par le trousseau du système

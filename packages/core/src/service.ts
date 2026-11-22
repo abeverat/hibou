@@ -3,7 +3,7 @@
  * des charges). Garde la session, l'élève choisi et un petit cache mémoire.
  */
 import type { Compte, Cours, DateISO, Devoir, DevoirDetail, Releve } from './types';
-import type { EdBackend } from './ed/backend';
+import type { EdBackend, JetonConnexion } from './ed/backend';
 import { EdClient, type ResultatConnexion } from './ed/client';
 import { ErreurEd } from './ed/erreurs';
 
@@ -53,6 +53,20 @@ export class HibouService implements HibouApi {
   async connexion(identifiant: string, motdepasse: string) {
     this.reinitialiser();
     return this.apresConnexion(await this.client.connexion(identifiant, motdepasse));
+  }
+
+  /**
+   * Reconnexion avec un jeton « rester connecté ». Réservé au processus principal :
+   * ne fait pas partie de `METHODES_API`, la fenêtre ne manipule jamais de jeton.
+   */
+  async reprendre(jeton: JetonConnexion) {
+    this.reinitialiser();
+    return this.apresConnexion(await this.client.reprendre(jeton));
+  }
+
+  /** Jeton de la session en cours (processus principal uniquement). */
+  jetonActuel(): JetonConnexion | null {
+    return this.client.jetonActuel();
   }
 
   async repondreQcm(choix: string) {

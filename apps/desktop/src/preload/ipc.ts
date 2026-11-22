@@ -6,7 +6,7 @@ export const CANAL_IPC = 'hibou:appel';
 export const METHODES_BUREAU = [
   'appareilEnAttente', 'memoriserAppareil', 'oublierAppareil', 'appareilMemorise',
   'biometrie', 'activerBiometrie', 'ignorerBiometrie', 'desactiverBiometrie', 'deverrouiller',
-  'verrouiller', 'deverrouillerSession', 'estVerrouille', 'reglages',
+  'verrouiller', 'deverrouillerSession', 'estVerrouille', 'reglages', 'reprendreSession',
 ] as const;
 
 export const CANAL_VERROU = 'hibou:verrou';
@@ -32,6 +32,10 @@ export interface EtatBiometrie {
 }
 
 export interface ApiBureau extends HibouApi {
+  /** `garder` : « Rester connecté sur cet ordinateur » (jeton EcoleDirecte enregistré chiffré). */
+  connexion(identifiant: string, motdepasse: string, garder?: boolean): Promise<import('@hibou/core').ResultatConnexion>;
+  /** Reconnexion avec le jeton enregistré ; null s'il n'y en a pas. */
+  reprendreSession(): Promise<import('@hibou/core').ResultatConnexion | null>;
   /** true si un QCM vient d'être réussi et que l'appareil peut être mémorisé. */
   appareilEnAttente(): Promise<boolean>;
   /** Mémorise cn/cv (chiffrés) pour éviter le QCM ; false si le chiffrement est indisponible. */

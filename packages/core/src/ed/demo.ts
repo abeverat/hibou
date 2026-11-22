@@ -8,7 +8,7 @@
  * - mot de passe `faux` → erreur « identifiants incorrects ».
  */
 import { ajouterJours, dateLocale, ecartJours, jourSemaine, lundiDeLaSemaine } from '../dates';
-import type { EdBackend, EtapeConnexion, Verbe } from './backend';
+import type { EdBackend, EtapeConnexion, JetonConnexion, Verbe } from './backend';
 import { ErreurEd, erreurDepuisCode } from './erreurs';
 import { encodeBase64 } from './parsers';
 import type {
@@ -86,12 +86,33 @@ export class DemoBackend implements EdBackend {
   async connexion(identifiant: string, motdepasse: string): Promise<EtapeConnexion> {
     await this.attendre();
     if (motdepasse === 'faux') throw erreurDepuisCode(505);
+    this.identifiantDemo = identifiant;
     if (identifiant.trim().toLowerCase() === 'qcm') {
       this.qcmEnCours = true;
       return { etat: 'qcm', qcm: copie(QCM) };
     }
     this.connecte = true;
-    return { etat: 'connecte', login: copie((fixtureLogin as RawReponse<RawLogin>).data) };
+    return { etat: 'connecte', login: this.loginDemo() };
+  }
+
+  private identifiantDemo = 'demo';
+
+  jetonActuel(): JetonConnexion | null {
+    return this.connecte ? { identifiant: this.identifiantDemo, uuid: 'demo', typeCompte: '1', accessToken: 'demo-jeton' } : null;
+  }
+
+  /** Démo : jeton factice « demo-jeton », accepté tel quel. */
+  async reprendre(jeton: JetonConnexion): Promise<EtapeConnexion> {
+    await this.attendre();
+    if (jeton.accessToken !== 'demo-jeton') throw new ErreurEd('session', 'Votre session a expiré : reconnectez-vous avec votre mot de passe.');
+    this.connecte = true;
+    return { etat: 'connecte', login: this.loginDemo() };
+  }
+
+  private loginDemo(): RawLogin {
+    const login = copie((fixtureLogin as RawReponse<RawLogin>).data);
+    login.accounts[0]!.accessToken = 'demo-jeton';
+    return login;
   }
 
   async repondreQcm(choix: string): Promise<EtapeConnexion> {
@@ -103,7 +124,7 @@ export class DemoBackend implements EdBackend {
     }
     this.qcmEnCours = false;
     this.connecte = true;
-    return { etat: 'connecte', login: copie((fixtureLogin as RawReponse<RawLogin>).data) };
+    return { etat: 'connecte', login: this.loginDemo() };
   }
 
   deconnexion(): void {

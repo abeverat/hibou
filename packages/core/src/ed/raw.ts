@@ -23,6 +23,9 @@ export interface RawCompte {
   idLogin: number;
   id: number;
   typeCompte: string; // "E" = élève, "1" = famille
+  /** Jeton de reconnexion (connexion « se souvenir de moi »). Les deux graphies existent selon les sources. */
+  accessToken?: string;
+  access_token?: string;
   main: boolean;
   prenom: string;
   nom: string;

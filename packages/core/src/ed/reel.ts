@@ -4,10 +4,15 @@
  * hass-ecoledirecte), voir docs/ecoledirecte-api.md.
  *
  * Sécurité : identifiant, mot de passe et token restent en mémoire dans cet objet ; rien n'est
- * écrit sur disque ni journalisé. Le mot de passe est gardé pour la durée de la session afin de
- * finir le QCM et de se reconnecter quand le token expire ; il est effacé à la déconnexion.
+ * écrit sur disque ni journalisé.
+ *
+ * Connexion « se souvenir de moi » (type mobile) : la connexion par mot de passe envoie
+ * `sesouvenirdemoi` et un uuid d'appareil ; EcoleDirecte renvoie un `accessToken` qui permet
+ * ensuite de se reconnecter SANS mot de passe (`isReLogin: true`). Dès ce jeton reçu, le mot de
+ * passe est effacé de la mémoire : les reconnexions (token expiré) utilisent le jeton.
+ * Si EcoleDirecte ne fournit pas de jeton, le mot de passe reste en mémoire pour la session.
  */
-import type { EdBackend, EtapeConnexion, Verbe } from './backend';
+import type { EdBackend, EtapeConnexion, JetonConnexion, Verbe } from './backend';
 import { ErreurEd, erreurDepuisCode } from './erreurs';
 import type { RawLogin, RawQcm, RawReponse } from './raw';
 
@@ -74,6 +79,10 @@ export interface OptionsReel {
   doubleAuth?: { cn: string; cv: string } | null;
   /** Appelé quand EcoleDirecte fournit de nouveaux `cn`/`cv` après un QCM réussi. */
   onDoubleAuth?: (fa: { cn: string; cv: string }) => void;
+  /** Appelé à chaque nouveau jeton de reconnexion (connexion, reprise, renouvellement). */
+  onJeton?: (jeton: JetonConnexion) => void;
+  /** Générateur d'uuid d'appareil (tests). */
+  uuid?: () => string;
 }
 
 export class ReelBackend implements EdBackend {
@@ -86,12 +95,19 @@ export class ReelBackend implements EdBackend {
   private cookies = new Map<string, string>();
   private fa: { cn: string; cv: string } | null;
   private readonly onDoubleAuth?: (fa: { cn: string; cv: string }) => void;
+  private jeton: JetonConnexion | null = null;
+  /** uuid d'appareil de la connexion en cours (par mot de passe). */
+  private uuid = '';
+  private readonly onJeton?: (jeton: JetonConnexion) => void;
+  private readonly nouvelUuid: () => string;
 
   constructor(options: OptionsReel) {
     this.http = options.http;
     this.journal = options.journal ?? (() => {});
     this.fa = options.doubleAuth ?? null;
     this.onDoubleAuth = options.onDoubleAuth;
+    this.onJeton = options.onJeton;
+    this.nouvelUuid = options.uuid ?? (() => globalThis.crypto.randomUUID());
   }
 
   /** `cn`/`cv` mémorisés à utiliser pour la prochaine connexion (null : aucun). */
@@ -103,6 +119,32 @@ export class ReelBackend implements EdBackend {
 
   async connexion(identifiant: string, motdepasse: string): Promise<EtapeConnexion> {
     this.identifiants = { identifiant, motdepasse };
+    this.jeton = null;
+    this.uuid = this.nouvelUuid();
+    return this.loginAvecRepli();
+  }
+
+  async reprendre(jeton: JetonConnexion): Promise<EtapeConnexion> {
+    this.identifiants = null;
+    this.jeton = { ...jeton };
+    this.uuid = jeton.uuid;
+    try {
+      return await this.loginAvecRepli();
+    } catch (e) {
+      this.jeton = null;
+      // Jeton refusé (expiré, mot de passe changé…) : il faut se reconnecter avec le mot de passe.
+      if (e instanceof ErreurEd && e.type === 'identifiants') {
+        throw new ErreurEd('session', 'Votre session a expiré : reconnectez-vous avec votre mot de passe.', e.code);
+      }
+      throw e;
+    }
+  }
+
+  jetonActuel(): JetonConnexion | null {
+    return this.token && this.jeton ? { ...this.jeton } : null;
+  }
+
+  private async loginAvecRepli(): Promise<EtapeConnexion> {
     try {
       return await this.login();
     } catch (e) {
@@ -117,7 +159,7 @@ export class ReelBackend implements EdBackend {
   }
 
   async repondreQcm(choix: string): Promise<EtapeConnexion> {
-    if (!this.identifiants) throw new ErreurEd('qcm', 'Aucune connexion en cours.');
+    if (!this.identifiants && !this.jeton) throw new ErreurEd('qcm', 'Aucune connexion en cours.');
     const r = await this.envoyer<{ cn?: string; cv?: string } | null>(
       'connexion/doubleauth.awp', 'post', `data={"choix": "${choix}"}`,
     );
@@ -135,40 +177,71 @@ export class ReelBackend implements EdBackend {
 
   deconnexion(): void {
     this.identifiants = null;
+    this.jeton = null;
     this.token = null;
     this.token2fa = null;
     this.cookies.clear();
   }
 
-  /** GTK puis login ; renvoie le compte, ou le QCM si EcoleDirecte le demande (code 250). */
+  /**
+   * GTK puis login ; renvoie le compte, ou le QCM si EcoleDirecte le demande (code 250).
+   * Par mot de passe s'il est en mémoire, sinon avec le jeton de reconnexion.
+   */
   private async login(): Promise<EtapeConnexion> {
-    const { identifiant, motdepasse } = this.identifiants!;
+    const parJeton = !this.identifiants && this.jeton !== null;
+    if (!this.identifiants && !parJeton) throw new ErreurEd('non-connecte', "Vous n'êtes pas connecté.");
     this.token = null;
     this.token2fa = null;
     this.cookies.clear();
     const gtk = await this.lireGtk();
 
-    const champs = [
-      `"identifiant":"${encoderIdentifiant(identifiant)}"`,
-      `"motdepasse":"${encoderIdentifiant(motdepasse)}"`,
-      '"isReLogin": false',
-      '"uuid": ""',
-    ];
+    const identifiant = parJeton ? this.jeton!.identifiant : this.identifiants!.identifiant;
+    const champs = parJeton
+      ? [
+          `"identifiant":"${encoderIdentifiant(identifiant)}"`,
+          '"motdepasse":""',
+          '"isReLogin": true',
+          `"uuid": ${JSON.stringify(this.uuid)}`,
+          `"typeCompte": ${JSON.stringify(this.jeton!.typeCompte)}`,
+          `"accesstoken": ${JSON.stringify(this.jeton!.accessToken)}`,
+        ]
+      : [
+          `"identifiant":"${encoderIdentifiant(identifiant)}"`,
+          `"motdepasse":"${encoderIdentifiant(this.identifiants!.motdepasse)}"`,
+          '"sesouvenirdemoi": true',
+          '"isReLogin": false',
+          `"uuid": ${JSON.stringify(this.uuid)}`,
+        ];
     if (this.fa) {
       const { cn, cv } = this.fa;
       champs.push(`"cn":"${cn}"`, `"cv":"${cv}"`, `"fa": [{"cn": "${cn}", "cv": "${cv}"}]`);
     }
     const reponse = await this.appel('POST', `${API_BASE}/login.awp?v=${API_VERSION}`, `data={${champs.join(', ')}}`, { 'x-gtk': gtk });
     const json = this.lireJson<RawLogin>(reponse);
-    this.journal(`login.awp → code ${json.code}`);
+    this.journal(`login.awp${parJeton ? ' (jeton)' : ''} → code ${json.code}`);
     this.retenirToken(reponse, json);
 
     if (json.code === 200) {
       if (!json.data?.accounts?.length) throw new ErreurEd('inconnue', 'EcoleDirecte n’a renvoyé aucun compte.');
+      this.retenirJeton(identifiant, json.data);
       return { etat: 'connecte', login: json.data };
     }
     if (json.code === 250) return { etat: 'qcm', qcm: await this.lireQcm() };
     throw erreurDepuisCode(json.code, json.message);
+  }
+
+  /** Garde le jeton de reconnexion renvoyé par EcoleDirecte ; le mot de passe n'est alors plus utile. */
+  private retenirJeton(identifiant: string, login: RawLogin) {
+    const compte = login.accounts[0]!;
+    const accessToken = compte.accessToken || compte.access_token || this.jeton?.accessToken;
+    if (!accessToken) {
+      this.journal('pas de jeton de reconnexion fourni');
+      return;
+    }
+    this.jeton = { identifiant, uuid: this.uuid, typeCompte: String(compte.typeCompte), accessToken };
+    this.identifiants = null;
+    this.journal('jeton de reconnexion reçu');
+    this.onJeton?.({ ...this.jeton });
   }
 
   private async lireGtk(): Promise<string> {
@@ -188,7 +261,7 @@ export class ReelBackend implements EdBackend {
   // ---------- Requêtes de données ----------
 
   async requete<T>(chemin: string, verbe: Verbe, donnees: object): Promise<T> {
-    if (!this.token || !this.identifiants) throw new ErreurEd('non-connecte', "Vous n'êtes pas connecté.");
+    if (!this.token || (!this.identifiants && !this.jeton)) throw new ErreurEd('non-connecte', "Vous n'êtes pas connecté.");
     const corps = `data=${JSON.stringify(donnees)}`;
     let r = await this.envoyer<T>(chemin, verbe, corps);
     if (r.code === 520 || r.code === 525) {
