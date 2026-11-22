@@ -154,7 +154,7 @@ export function CalendrierDevoirs({ eleve }: { eleve: Eleve | undefined }) {
                     {c.annule && <span className="badge badge-rouge">Annulé</span>}
                   </div>
                   <div className="cal-cours-info">
-                    {heure(c.debut)}–{heure(c.fin)} · {c.salle}
+                    {[`${heure(c.debut)}–${heure(c.fin)}`, c.salle].filter(Boolean).join(' · ')}
                   </div>
                   {vide ? <div className="cal-rien">Rien à faire</div> : devoirs.map((d) => ligne(d))}
                 </>

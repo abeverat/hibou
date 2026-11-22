@@ -116,21 +116,39 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .cal-jour.aujourdhui .cal-jour-titre { background: var(--accent); color: white; }
 .cal-jour.aujourdhui .cal-jour-titre .discret { color: inherit; opacity: 0.85; }
 .cal-sans-creneau { background: var(--surface); border: 1px dashed var(--bord); border-radius: 8px; padding: 0.3rem 0.45rem; display: flex; flex-direction: column; gap: 0.2rem; }
-.cal-colonne { position: relative; background: var(--surface); border: 1px solid var(--bord); border-radius: 8px; }
-.cal-ligne-heure { position: absolute; left: 0; right: 0; border-top: 1px solid var(--bord); opacity: 0.6; }
+.cal-colonne { position: relative; background: color-mix(in srgb, var(--surface) 55%, var(--fond)); border-radius: 10px; }
+.cal-ligne-heure { position: absolute; left: 0; right: 0; border-top: 1px solid color-mix(in srgb, var(--bord) 70%, transparent); }
 .cal-vide-jour { position: absolute; inset: 0; display: grid; place-items: center; color: var(--discret); }
 
+/*
+ * Couleur de matière : on garde la TEINTE d'EcoleDirecte (identité de la matière) mais on impose
+ * la luminosité et on plafonne la saturation, pour que toutes les matières aient le même poids
+ * (sinon un bleu pur sort presque noir et un vert pâle presque gris).
+ */
+.cal-cours.plein, .frise li {
+  --matiere-fond: oklch(from var(--couleur) 0.955 min(c, 0.045) h);
+  --matiere-fond-fort: oklch(from var(--couleur) 0.91 min(c, 0.07) h);
+  --matiere-trait: oklch(from var(--couleur) 0.62 max(min(c, 0.17), 0.08) h);
+}
+@media (prefers-color-scheme: dark) {
+  .cal-cours.plein, .frise li {
+    --matiere-fond: oklch(from var(--couleur) 0.29 min(c, 0.055) h);
+    --matiere-fond-fort: oklch(from var(--couleur) 0.34 min(c, 0.075) h);
+    --matiere-trait: oklch(from var(--couleur) 0.74 max(min(c, 0.16), 0.08) h);
+  }
+}
+
 .cal-cours {
-  position: absolute; left: 3px; right: 3px; border-radius: 7px; padding: 0.25rem 0.45rem; overflow: hidden;
+  position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 0.3rem 0.5rem; overflow: hidden;
   font-size: 0.85rem; line-height: 1.3; z-index: 1;
 }
 .cal-cours:hover { z-index: 2; overflow: visible; }
 .cal-cours.plein {
-  background: color-mix(in srgb, var(--couleur) 22%, var(--surface));
-  border-left: 4px solid var(--couleur);
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+  background: var(--matiere-fond);
+  border-left: 3px solid var(--matiere-trait);
 }
-.cal-cours.plein:hover { box-shadow: 0 4px 14px rgb(0 0 0 / 0.35); }
+.cal-cours.plein:hover { background: var(--matiere-fond-fort); box-shadow: 0 4px 14px rgb(0 0 0 / 0.25); }
+.cal-cours.plein .cal-cours-info { color: var(--discret); opacity: 1; }
 .cal-cours.avec-controle { outline: 2px solid var(--rouge); outline-offset: -2px; }
 .cal-cours.vide {
   background: color-mix(in srgb, var(--discret) 10%, var(--surface));
@@ -197,9 +215,9 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .frise { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
 .frise li {
   display: flex; gap: 0.6rem; align-items: center; padding: 0.35rem 0.6rem; border-radius: 8px;
-  border-left: 4px solid var(--couleur); background: color-mix(in srgb, var(--couleur) 10%, var(--surface));
+  border-left: 3px solid var(--matiere-trait); background: var(--matiere-fond);
 }
-.frise li.en-cours { background: color-mix(in srgb, var(--couleur) 30%, var(--surface)); box-shadow: 0 0 0 2px var(--bleu); }
+.frise li.en-cours { background: var(--matiere-fond-fort); box-shadow: 0 0 0 2px var(--accent); }
 .frise li.fini { opacity: 0.5; }
 .frise li.annule .frise-matiere { text-decoration: line-through; }
 .frise-heure { font-variant-numeric: tabular-nums; color: var(--discret); min-width: 3.2em; }
@@ -218,9 +236,9 @@ button.lien-controle { color: var(--rouge); font-weight: 700; }
 .liste-devoirs .cal-devoir { margin: 0; }
 
 /* ---------- Emploi du temps ---------- */
-.cal-cours.edt { border-left-width: 4px; }
+.cal-cours.edt { border-left-width: 3px; }
 .cal-cours.edt.annule { opacity: 0.55; }
-.cal-cours.en-cours { box-shadow: 0 0 0 2px var(--bleu); }
+.cal-cours.en-cours { box-shadow: 0 0 0 2px var(--accent); }
 .cal-maintenant { position: absolute; left: 0; right: 0; border-top: 2px solid var(--rouge); z-index: 3; }
 .cal-maintenant::before { content: ''; position: absolute; left: -4px; top: -5px; width: 8px; height: 8px; border-radius: 50%; background: var(--rouge); }
 

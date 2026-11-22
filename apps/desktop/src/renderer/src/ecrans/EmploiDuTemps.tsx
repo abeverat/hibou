@@ -40,7 +40,7 @@ export function EmploiDuTemps() {
                   {c.modifie && !c.annule && <span className="badge badge-orange">Modifié</span>}
                 </div>
                 <div className="cal-cours-info">
-                  {heure(c.debut)}–{heure(c.fin)} · {c.salle}
+                  {[`${heure(c.debut)}–${heure(c.fin)}`, c.salle].filter(Boolean).join(' · ')}
                 </div>
                 <div className="cal-cours-info">{c.professeur}</div>
               </>

@@ -30,6 +30,9 @@ export interface RenduCours {
   contenu: ReactNode;
 }
 
+/** Air vertical entre deux cours consécutifs (px). */
+const ESPACE = 3;
+
 export function GrilleSemaine({
   jours, cours, aujourdHui, jourMobile, setJourMobile, rendreCours, avantColonne,
 }: {
@@ -108,9 +111,10 @@ export function GrilleSemaine({
                       key={c.id}
                       className={`cal-cours ${r.className} ${c.annule ? 'annule' : ''}`}
                       style={{
-                        top: (minutes(c.debut) - plage.debut) * PX_PAR_MINUTE,
-                        height: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE,
-                        minHeight: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE,
+                        // ESPACE px d'air entre deux cours qui se suivent.
+                        top: (minutes(c.debut) - plage.debut) * PX_PAR_MINUTE + ESPACE / 2,
+                        height: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE - ESPACE,
+                        minHeight: (minutes(c.fin) - minutes(c.debut)) * PX_PAR_MINUTE - ESPACE,
                         ['--couleur' as string]: c.couleur,
                       }}
                     >
